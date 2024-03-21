@@ -9,7 +9,7 @@ CREATE TABLE Classes (
 	username TEXT,
 	FOREIGN KEY(username) REFERENCES Profiles(username),
 	class_date DATE,
-	class_type INT,
+	class_type INT
 );
 
 -- Class Relations
