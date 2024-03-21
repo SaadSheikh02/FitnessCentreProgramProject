@@ -8,7 +8,8 @@ CREATE TABLE Classes (
     class_id SERIAL PRIMARY KEY,
 	username TEXT,
 	FOREIGN KEY(username) REFERENCES Profiles(username),
-	class_date DATE
+	class_date DATE,
+	class_type INT,
 );
 
 -- Class Relations
