@@ -3,6 +3,23 @@ CREATE TABLE Profiles (
 	passwords TEXT NOT NULL
 );
 
+-- Classes Table
+CREATE TABLE Classes (
+    class_id SERIAL PRIMARY KEY,
+	username TEXT,
+	FOREIGN KEY(username) REFERENCES Profiles(username),
+	class_date DATE
+);
+
+-- Class Relations
+CREATE TABLE Class_Members (
+    class_id INT,
+	FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+	username TEXT,
+	FOREIGN KEY(username) REFERENCES Profiles(username),
+	class_date DATE
+);
+
 CREATE TABLE Members (
     username TEXT PRIMARY KEY,
 	first_name TEXT NOT NULL,
