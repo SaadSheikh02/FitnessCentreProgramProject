@@ -7,6 +7,7 @@ CREATE TABLE Members (
     username TEXT PRIMARY KEY,
 	first_name TEXT NOT NULL,
 	last_name TEXT NOT NULL,
+	credit_card INT NOT NULL,
 	birthday DATE NOT NULL,
 	height NUMERIC, 
 	weight NUMERIC, 
@@ -30,15 +31,8 @@ CREATE TABLE Members (
 );
 
 CREATE TABLE Rooms (
-	room_id INT SERIAL PRIMARY KEY,
+	room_id SERIAL PRIMARY KEY,
 	booking_status TEXT
-);
-
-CREATE TABLE Payment_Options (
-	payment_id SERIAL PRIMARY KEY,
-	member_id TEXT,
-	payment NUMERIC,
-	FOREIGN KEY (member_id) REFERENCES Profiles(username)
 );
 
 CREATE TABLE Exercise_Routines (
@@ -82,14 +76,14 @@ CREATE TABLE Bookings (
 );
 
 CREATE TABLE Equipment (
-	equipment_id int SERIAL PRIMARY KEY,
+	equipment_id SERIAL PRIMARY KEY,
 	room_id INT,
 	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
 	equipment_status TEXT
 );
 
 CREATE TABLE Bills(
-	bill_id INT SERIAL PRIMARY KEY,
+	bill_id SERIAL PRIMARY KEY,
 	member_id TEXT,
 	FOREIGN KEY(member_id) REFERENCES Profiles(username),
 	price INT,
