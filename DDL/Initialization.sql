@@ -6,8 +6,8 @@ CREATE TABLE Profiles (
 -- Classes Table
 CREATE TABLE Classes (
     class_id SERIAL PRIMARY KEY,
-	trainer TEXT,
-	FOREIGN KEY(trainer) REFERENCES Profiles(username),
+	trainer_id TEXT,
+	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
 	class_date DATE,
 	class_type INT
 );
@@ -16,8 +16,8 @@ CREATE TABLE Classes (
 CREATE TABLE Class_Members (
     class_id INT,
 	FOREIGN KEY (class_id) REFERENCES Classes(class_id),
-	username TEXT,
-	FOREIGN KEY(username) REFERENCES Profiles(username),
+	member_id TEXT,
+	FOREIGN KEY(member_id) REFERENCES Profiles(username),
 	class_date DATE
 );
 
@@ -49,14 +49,14 @@ CREATE TABLE Members (
 
 CREATE TABLE Payment_Options (
 	payment_id SERIAL PRIMARY KEY,
-	username TEXT,
+	member_id TEXT,
 	payment NUMERIC,
-	FOREIGN KEY (username) REFERENCES Profiles(username)
+	FOREIGN KEY (member_id) REFERENCES Profiles(username)
 );
 
 CREATE TABLE Exercise_Routines (
 	exercise_id SERIAL PRIMARY KEY,
-	username TEXT,
+	member_id TEXT,
 	exercise TEXT,
-	FOREIGN KEY (username) REFERENCES Profiles(username)
+	FOREIGN KEY (member_id) REFERENCES Profiles(username)
 );
