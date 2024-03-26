@@ -30,7 +30,7 @@ CREATE TABLE Members (
 );
 
 CREATE TABLE Rooms (
-	room_id INT PRIMARY KEY,
+	room_id INT SERIAL PRIMARY KEY,
 	booking_status TEXT
 );
 
@@ -82,14 +82,14 @@ CREATE TABLE Bookings (
 );
 
 CREATE TABLE Equipment (
-	equipment_id int PRIMARY KEY,
+	equipment_id int SERIAL PRIMARY KEY,
 	room_id INT,
 	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
 	equipment_status TEXT
 );
 
 CREATE TABLE Bills(
-	bill_id INT PRIMARY KEY,
+	bill_id INT SERIAL PRIMARY KEY,
 	member_id TEXT,
 	FOREIGN KEY(member_id) REFERENCES Profiles(username),
 	price INT,
