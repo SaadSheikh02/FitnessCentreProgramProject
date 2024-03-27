@@ -1,13 +1,13 @@
 CREATE TABLE Profiles (
 	username TEXT PRIMARY KEY,
 	passwords TEXT NOT NULL,
+	first_name TEXT NOT NULL,
+	last_name TEXT NOT NULL,
 	user_type TEXT NOT NULL
 );
 
 CREATE TABLE Members (
     username TEXT PRIMARY KEY,
-	first_name TEXT NOT NULL,
-	last_name TEXT NOT NULL,
 	credit_card INT NOT NULL,
 	birthday DATE NOT NULL,
 	height NUMERIC, 
