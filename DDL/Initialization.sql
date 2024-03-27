@@ -1,6 +1,7 @@
 CREATE TABLE Profiles (
 	username TEXT PRIMARY KEY,
-	passwords TEXT NOT NULL
+	passwords TEXT NOT NULL,
+	user_type TEXT NOT NULL
 );
 
 CREATE TABLE Members (
