@@ -53,10 +53,10 @@ CREATE TABLE Classes (
 	class_type INT
 );
 
-CREATE TABLE Dates_Available (
+CREATE TABLE Dates_Trainer_unavailable (
 	trainer_id TEXT,
 	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
-	class_date DATE,
+	trainer_date DATE,
 	time_of_day TEXT
 );
 
