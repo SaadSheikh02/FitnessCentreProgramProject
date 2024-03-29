@@ -6,7 +6,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
+    private static String PORT = "5432";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
