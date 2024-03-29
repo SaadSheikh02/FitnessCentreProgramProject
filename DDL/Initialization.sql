@@ -37,7 +37,6 @@ CREATE TABLE Rooms (
 );
 
 CREATE TABLE Exercise_Routines (
-	exercise_id SERIAL PRIMARY KEY,
 	member_id TEXT,
 	exercise TEXT,
 	FOREIGN KEY (member_id) REFERENCES Profiles(username)
