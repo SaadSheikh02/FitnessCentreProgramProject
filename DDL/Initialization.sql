@@ -49,7 +49,9 @@ CREATE TABLE Classes (
 	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
 	room_id INT,
 	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
-	class_type INT
+	class_type INT,
+	class_date DATE,
+	time_of_day TEXT
 );
 
 CREATE TABLE Dates_Trainer_unavailable (
@@ -64,8 +66,7 @@ CREATE TABLE Class_Members (
     class_id INT,
 	FOREIGN KEY (class_id) REFERENCES Classes(class_id),
 	member_id TEXT,
-	FOREIGN KEY(member_id) REFERENCES Profiles(username),
-	class_date DATE
+	FOREIGN KEY(member_id) REFERENCES Profiles(username)
 );
 
 CREATE TABLE Bookings (
