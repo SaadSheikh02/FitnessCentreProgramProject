@@ -54,13 +54,20 @@ CREATE TABLE Classes (
 	time_of_day TEXT
 );
 
-CREATE TABLE Dates_Trainer_available (
+CREATE TABLE Dates_Trainer_Available (
 	trainer_id TEXT,
 	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
 	start_trainer_date DATE,
 	start_time_of_day TEXT,
 	end_trainer_date DATE,
 	end_time_of_day TEXT
+);
+
+CREATE TABLE Dates_Trainer_Unavailable (
+	trainer_id TEXT,
+	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
+	trainer_date DATE,
+	time_of_day TEXT
 );
 
 -- Class Relations
