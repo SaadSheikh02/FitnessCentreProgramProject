@@ -7,5 +7,6 @@ DROP TABLE dates_trainer_unavailable;
 DROP TABLE equipment;
 DROP TABLE exercise_routines;
 DROP TABLE members;
+DROP TABLE health_statistics;
 DROP TABLE profiles;
 DROP TABLE rooms;

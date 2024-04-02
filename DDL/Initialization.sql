@@ -42,6 +42,14 @@ CREATE TABLE Exercise_Routines (
 	FOREIGN KEY (member_id) REFERENCES Profiles(username)
 );
 
+CREATE TABLE Health_Statistics (
+	member_id TEXT,
+	FOREIGN KEY (member_id) REFERENCES Profiles(username),
+	weight NUMERIC,
+	speed NUMERIC,
+	lift NUMERIC
+);
+
 -- Classes Table
 CREATE TABLE Classes (
     class_id SERIAL PRIMARY KEY,
@@ -82,7 +90,8 @@ CREATE TABLE Bookings (
 	room_id INT,
 	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
 	class_date DATE,
-	time_of_day TEXT
+	time_of_day TEXT,
+	event_info TEXT
 );
 
 CREATE TABLE Equipment (
