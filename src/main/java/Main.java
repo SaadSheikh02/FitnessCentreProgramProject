@@ -123,6 +123,7 @@ public class Main {
 
         switch (choice) {
             case 1:
+                profileInformation();
                 break;
             case 2:
                 break;
@@ -341,6 +342,44 @@ public class Main {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    // MEMBER FUNCTIONS ==============================================================================
+    private static void profileInformation(){
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) View Personal Information");
+        System.out.println("2) View Fitness Goals");
+        System.out.println("3) View Health Metrics");
+        System.out.println("4) View Health Action");
+        System.out.println("5) View Health Statistics");
+        System.out.println("6) View Fitness Achievements");
+        System.out.println("7) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                profileInformation();
+        }
     }
 
 }
