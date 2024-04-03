@@ -1,0 +1,1 @@
+SELECT * FROM profiles WHERE username = 'jadfakhoury' AND passwords = 'football'
