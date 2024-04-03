@@ -12,6 +12,8 @@ public class Main {
     private static String USER = "postgres";
     private static String PASSWORD = "DarkSniper22";
 
+    private static String username = null;
+
     public static void main(String[] args) {
 
         String url = "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DB_NAME; // change url accordingly
@@ -25,8 +27,7 @@ public class Main {
             if (connection != null) {
                 System.out.println("Connected to the database");
 
-                String username = null;
-                menuDecider(username);
+                menuDecider();
 
             } else {
                 System.out.println("Failed to connect to the database");
@@ -38,10 +39,10 @@ public class Main {
     }
 
     // Menu functions
-    private static void menuDecider(String username) {
+    private static void menuDecider() {
         try {
             if (username == null) {
-                mainMenuChoices(username);
+                mainMenuChoices();
             } else {
                 String sql = "SELECT user_type FROM Profiles WHERE username = ?;";
                 PreparedStatement statement = connection.prepareStatement(sql);
@@ -53,13 +54,13 @@ public class Main {
 
                     switch (user_type){
                         case "TYPE_MEMBER":
-                            memberMenuChoices(username);
+                            memberMenuChoices();
                             break;
                         case "TYPE_TRAINER":
-                            memberMenuChoices(username);
+                            trainerMenuChoices();
                             break;
                         case "TYPE_ADMIN":
-                            memberMenuChoices(username);
+                            adminMenuChoices();
                             break;
                     }
 
@@ -75,7 +76,7 @@ public class Main {
         }
     }
 
-    private static void mainMenuChoices(String username) {
+    private static void mainMenuChoices() {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) User Registration");
@@ -94,23 +95,22 @@ public class Main {
                 String loginResponse = userLogin();
                 if(loginResponse != null){
                     username = loginResponse;
-                    System.out.println("Username is " + username);
-                    menuDecider(username);
+                    menuDecider();
                 }
                 else {
                     System.out.println("username and/or password don't exist");
-                    menuDecider(username);
+                    menuDecider();
                 }
                 break;
             case 3:
-                break;
+                return;
             default:
                 System.out.println("Invalid choice. Try again");
-                mainMenuChoices(username);
+                mainMenuChoices();
         }
     }
 
-    private static void memberMenuChoices(String username) {
+    private static void memberMenuChoices() {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Profile Information");
@@ -127,14 +127,15 @@ public class Main {
             case 2:
                 break;
             case 3:
+                userLogout();
                 break;
             default:
                 System.out.println("Invalid choice. Try again");
-                memberMenuChoices(username);
+                memberMenuChoices();
         }
     }
 
-    private static void trainerMenuChoices(String username) {
+    private static void trainerMenuChoices() {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Trainer Schedule Management");
@@ -151,14 +152,15 @@ public class Main {
             case 2:
                 break;
             case 3:
+                userLogout();
                 break;
             default:
                 System.out.println("Invalid choice. Try again");
-                trainerMenuChoices(username);
+                trainerMenuChoices();
         }
     }
 
-    private static void adminMenuChoices(String username) {
+    private static void adminMenuChoices() {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Room Booking Management");
@@ -178,9 +180,14 @@ public class Main {
                 break;
             case 3:
                 break;
+            case 4:
+                break;
+            case 5:
+                userLogout();
+                break;
             default:
                 System.out.println("Invalid choice. Try again");
-                adminMenuChoices(username);
+                adminMenuChoices();
         }
     }
 
@@ -255,6 +262,11 @@ public class Main {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void userLogout(){
+        username = null;
+        menuDecider();
     }
 
     private static String getUsername() {
