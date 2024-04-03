@@ -362,6 +362,7 @@ public class Main {
 
         switch (choice) {
             case 1:
+                personalInformation();
                 break;
             case 2:
                 break;
@@ -382,14 +383,40 @@ public class Main {
         }
     }
 
-    private static void personalInformation(){
+    private static void personalInformation() {
         try {
             String sql = "SELECT p.first_name, p.last_name, m.credit_card, m.birthday, m.height, m.weight FROM Profiles p JOIN Members m ON p.username = m.username WHERE p.username = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
 
-            resultSet.getString("first_name");
+            // Move cursor to the first row
+            if (resultSet.next()) {
+                String name = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+                System.out.println("Name: " + name);
+                System.out.println("Credit Card: " + resultSet.getInt("credit_card"));
+                System.out.println("Birthday: " + resultSet.getDate("birthday"));
+                System.out.println("Height: " + resultSet.getFloat("height"));
+                System.out.println("Weight: " + resultSet.getFloat("weight"));
+                System.out.println();
+
+                System.out.println("Would you like to change any of the information? (y/n)");
+                char choice = input.next().charAt(0);
+                input.nextLine();
+                switch (choice){
+                    case 'y':
+                        //setPersonalInformation();
+                        break;
+                    case 'n':
+                        menuDecider();
+                        break;
+                    default:
+                        personalInformation();
+                }
+            } else {
+                System.out.println("No data found for the given username.");
+                profileInformation();
+            }
 
             resultSet.close();
             statement.close();
@@ -397,5 +424,6 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 
 }
