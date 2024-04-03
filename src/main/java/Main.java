@@ -26,7 +26,7 @@ public class Main {
             if (connection != null) {
                 System.out.println("Connected to the database");
 
-                String userType = null;
+                String username = null;
 
                 while(true){
                     int menuChoice = mainMenuChoices();
@@ -38,21 +38,14 @@ public class Main {
                     else if(menuChoice == 2){
                         String loginResponse = userLogin();
                         if(loginResponse != null){
-                            userType = loginResponse;
+                            username = loginResponse;
                         }
                     }
                     else if(menuChoice == 3){
-                        int student_id = getStudentID();
-                        String student_email = getNewEmail();
-                        updateStudentEmail(student_id, student_email);
-
                     }
                     else if(menuChoice == 4){
-                        int student_id = getStudentID();
-                        deleteStudent(student_id);
                     }
                     else if(menuChoice == 5){
-                        System.exit(0);
                     }
 
                 }
@@ -146,7 +139,7 @@ public class Main {
             statement.executeUpdate();
 
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.getString("user_type");
+            return resultSet.getString("username");
         }
         catch (Exception e){
             e.printStackTrace();
