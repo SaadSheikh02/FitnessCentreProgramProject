@@ -7,10 +7,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
-    private static String DB_NAME = "FitnessApplication";
+    private static String PORT = "1433";
+    private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
-    private static String PASSWORD = "DarkSniper22";
+    private static String PASSWORD = "50551591";
 
 
     public static void main(String[] args) {
@@ -239,9 +239,7 @@ public class Main {
             String sql = "SELECT * FROM members WHERE username = ?;";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, username);
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getResultSet();
-            System.out.println("student_id\tfirst_name\tlast_name\temail\tenrolment_date");
+            ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
                 System.out.println();
                 /*
