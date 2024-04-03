@@ -7,11 +7,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String PORT = "5432";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
-
+    private static String PASSWORD = "DarkSniper22";
 
     public static void main(String[] args) {
 
@@ -27,29 +26,8 @@ public class Main {
                 System.out.println("Connected to the database");
 
                 String username = null;
+                menuDecider(username);
 
-                while(true){
-                    int menuChoice = mainMenuChoices();
-
-                    if(menuChoice == 1){
-                        userRegistration();
-
-                    }
-                    else if(menuChoice == 2){
-                        String loginResponse = userLogin();
-                        if(loginResponse != null){
-                            username = loginResponse;
-                            System.out.println("Username is " + username);
-                        }
-                    }
-                    else if(menuChoice == 3){
-                    }
-                    else if(menuChoice == 4){
-                    }
-                    else if(menuChoice == 5){
-                    }
-
-                }
             } else {
                 System.out.println("Failed to connect to the database");
             }
@@ -60,7 +38,44 @@ public class Main {
     }
 
     // Menu functions
-    private static int mainMenuChoices() {
+    private static void menuDecider(String username) {
+        try {
+            if (username == null) {
+                mainMenuChoices(username);
+            } else {
+                String sql = "SELECT user_type FROM Profiles WHERE username = ?;";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, username);
+                ResultSet resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    String user_type = resultSet.getString("user_type");
+
+                    switch (user_type){
+                        case "TYPE_MEMBER":
+                            memberMenuChoices(username);
+                            break;
+                        case "TYPE_TRAINER":
+                            memberMenuChoices(username);
+                            break;
+                        case "TYPE_ADMIN":
+                            memberMenuChoices(username);
+                            break;
+                    }
+
+                } else {
+                    System.out.println("User not found!");
+                }
+
+                resultSet.close();
+                statement.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void mainMenuChoices(String username) {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) User Registration");
@@ -69,15 +84,33 @@ public class Main {
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
-        if(choice < 1 || choice > 3){
-            System.out.println("Invalid choice. Try again");
-            return mainMenuChoices();
-        }
         input.nextLine();
-        return choice;
+
+        switch (choice){
+            case 1:
+                userRegistration();
+                break;
+            case 2:
+                String loginResponse = userLogin();
+                if(loginResponse != null){
+                    username = loginResponse;
+                    System.out.println("Username is " + username);
+                    menuDecider(username);
+                }
+                else {
+                    System.out.println("username and/or password don't exist");
+                    menuDecider(username);
+                }
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                mainMenuChoices(username);
+        }
     }
 
-    private static int memberMenuChoices() {
+    private static void memberMenuChoices(String username) {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Profile Information");
@@ -86,15 +119,22 @@ public class Main {
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
-        if(choice < 1 || choice > 3){
-            System.out.println("Invalid choice. Try again");
-            return memberMenuChoices();
-        }
         input.nextLine();
-        return choice;
+
+        switch (choice) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                memberMenuChoices(username);
+        }
     }
 
-    private static int trainerMenuChoices() {
+    private static void trainerMenuChoices(String username) {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Trainer Schedule Management");
@@ -103,15 +143,22 @@ public class Main {
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
-        if(choice < 1 || choice > 3){
-            System.out.println("Invalid choice. Try again");
-            return trainerMenuChoices();
-        }
         input.nextLine();
-        return choice;
+
+        switch (choice) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                trainerMenuChoices(username);
+        }
     }
 
-    private static int adminMenuChoices() {
+    private static void adminMenuChoices(String username) {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Room Booking Management");
@@ -122,12 +169,19 @@ public class Main {
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
-        if(choice < 1 || choice > 5){
-            System.out.println("Invalid choice. Try again");
-            return adminMenuChoices();
-        }
         input.nextLine();
-        return choice;
+
+        switch (choice) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                adminMenuChoices(username);
+        }
     }
 
     private static void userRegistration() {
