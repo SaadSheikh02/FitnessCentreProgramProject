@@ -58,18 +58,73 @@ public class Main {
         }
     }
 
-    // Main Menu functions
+    // Menu functions
     private static int mainMenuChoices() {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) User Registration");
         System.out.println("2) User Login");
-        System.out.println("3) User Logout");
-        System.out.println("4) Profile Information");
-        System.out.println("5) Exit the program");
+        System.out.println("3) Exit the program");
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
+        if(choice < 1 || choice > 3){
+            System.out.println("Invalid choice. Try again");
+            return mainMenuChoices();
+        }
+        input.nextLine();
+        return choice;
+    }
+
+    private static int memberMenuChoices() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Profile Information");
+        System.out.println("2) Member Schedule Management");
+        System.out.println("3) Logout");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        if(choice < 1 || choice > 3){
+            System.out.println("Invalid choice. Try again");
+            return memberMenuChoices();
+        }
+        input.nextLine();
+        return choice;
+    }
+
+    private static int trainerMenuChoices() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Trainer Schedule Management");
+        System.out.println("2) View Member Profiles");
+        System.out.println("3) Logout");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        if(choice < 1 || choice > 3){
+            System.out.println("Invalid choice. Try again");
+            return trainerMenuChoices();
+        }
+        input.nextLine();
+        return choice;
+    }
+
+    private static int adminMenuChoices() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Room Booking Management");
+        System.out.println("2) Manage Equipment");
+        System.out.println("3) Manage Class Schedule");
+        System.out.println("4) View Bills");
+        System.out.println("5) Logout");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        if(choice < 1 || choice > 5){
+            System.out.println("Invalid choice. Try again");
+            return adminMenuChoices();
+        }
         input.nextLine();
         return choice;
     }
