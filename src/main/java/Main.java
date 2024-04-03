@@ -8,9 +8,9 @@ public class Main {
 
     private static String HOST = "localhost";
     private static String PORT = "5432";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
+    private static String PASSWORD = "DarkSniper22";
 
 
     public static void main(String[] args) {
@@ -236,13 +236,16 @@ public class Main {
     // Query functions
     public static boolean usernameExists(String username){
         try{
-            Statement statement = connection.createStatement();
-            statement.executeQuery("SELECT * FROM members WHERE username = ?;");
+            String sql = "SELECT * FROM members WHERE username = ?;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.executeUpdate();
             ResultSet resultSet = statement.getResultSet();
             System.out.println("student_id\tfirst_name\tlast_name\temail\tenrolment_date");
-            if(resultSet.isLast()){
+            if(resultSet.next()){
                 System.out.println();
-                while (resultSet.next()){
+                /*
+                * while (resultSet.next()){
                     System.out.print("\n" + resultSet.getString("username") + "\t");
                     System.out.print(resultSet.getInt("credit_card") + "\t");
                     System.out.print(resultSet.getDate("birthday") + "\t");
@@ -265,6 +268,8 @@ public class Main {
                     System.out.print(resultSet.getInt("cholestrol_level") + "\t");
                     System.out.print(resultSet.getInt("bloodsugar_level") + "\t");
                 }
+                * */
+
                 return true;
             }
         } catch (SQLException e) {
