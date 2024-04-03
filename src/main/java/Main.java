@@ -39,6 +39,7 @@ public class Main {
                         String loginResponse = userLogin();
                         if(loginResponse != null){
                             username = loginResponse;
+                            System.out.println("Username is " + username);
                         }
                     }
                     else if(menuChoice == 3){
@@ -191,10 +192,10 @@ public class Main {
             statement.setString(1, username);
             statement.setString(2, password);
 
-            statement.executeUpdate();
-
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.getString("username");
+            if(resultSet.next()){
+                return resultSet.getString("username");
+            }
         }
         catch (Exception e){
             e.printStackTrace();
