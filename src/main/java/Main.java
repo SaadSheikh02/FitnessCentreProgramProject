@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -7,10 +10,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
-    private static String DB_NAME = "FitnessApplication";
+    private static String PORT = "1433";
+    private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
-    private static String PASSWORD = "DarkSniper22";
+    private static String PASSWORD = "50551591";
 
     private static String username = null;
 
@@ -197,7 +200,9 @@ public class Main {
         String password = getPassword();
         String firstName = getFirstName();
         String lastName = getLastName();
+        Integer creditCard = getCreditCard();
         String userType = "TYPE_MEMBER";
+        String birthday = getBirthday();
 
         Random random = new Random();
         Double bmi = random.nextDouble(18.5, 25.0);
@@ -211,8 +216,8 @@ public class Main {
                 "VALUES (?, ?, ?, ?, ?)";
 
         String sql_member_statement = "INSERT INTO\n" +
-                "Members(username, bmi, systolic_bp, diastolic_bp, heart_rate, bloodsugar_level)\n" +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                "Members(username, credit_card, birthday, bmi, systolic_bp, diastolic_bp, heart_rate, bloodsugar_level)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try{
             PreparedStatement prepStatement_profile = connection.prepareStatement(sql_profile_statement);
@@ -228,14 +233,28 @@ public class Main {
             prepStatement_profile.executeUpdate();
 
             preparedStatement_member.setString(1, username);
-            preparedStatement_member.setDouble(2, bmi);
-            preparedStatement_member.setInt(3, systolicBP);
-            preparedStatement_member.setInt(4, diastolicBP);
-            preparedStatement_member.setInt(5, heartRate);
-            preparedStatement_member.setInt(6, bloodSugarLevel);
+            preparedStatement_member.setInt(2, creditCard);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try{
+                Date b_date = dateFormat.parse(birthday);
+                java.sql.Date sqlDate = new java.sql.Date(b_date.getTime());
+                preparedStatement_member.setDate(3, sqlDate);
+            } catch (ParseException | SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            preparedStatement_member.setDouble(4, bmi);
+            preparedStatement_member.setInt(5, systolicBP);
+            preparedStatement_member.setInt(6, diastolicBP);
+            preparedStatement_member.setInt(7, heartRate);
+            preparedStatement_member.setInt(8, bloodSugarLevel);
 
             // adding base member info
             preparedStatement_member.executeUpdate();
+
+            System.out.println("Profile Created");
+            menuDecider();
         }
         catch (Exception e){
             e.printStackTrace();
@@ -299,6 +318,39 @@ public class Main {
     private static String getLastName() {
         System.out.println("Enter last name: ");
         return input.nextLine();
+    }
+
+    private static String getBirthday() {
+        System.out.println("Enter birthday (YYYY-MM-DD): ");
+
+        if (input.hasNextLine()) {
+            input.nextLine();
+        }
+
+        String actual_date = input.nextLine();
+
+        SimpleDateFormat expectedFormat = new SimpleDateFormat("yyyy-MM-dd");
+        expectedFormat.setLenient(false);
+
+        try {
+            Date parsedDate = expectedFormat.parse(actual_date);
+
+            Date currDate = new Date();
+            if (currDate.before(parsedDate) || currDate.equals(parsedDate)){
+                System.out.println("Date cannot be past the current date");
+                return getBirthday();
+            }
+
+            return actual_date;
+        } catch (ParseException e) {
+            System.out.println("Invalid date or date format.");
+            return getBirthday();
+        }
+    }
+
+    private static int getCreditCard() {
+        System.out.println("Enter credit card number: ");
+        return input.nextInt();
     }
 
     // Query functions
