@@ -26,7 +26,6 @@ CREATE TABLE Members (
 	systolic_bp INT,
 	diastolic_bp INT,
 	heart_rate INT, 
-	cholestrol_level INT, 
 	bloodsugar_level INT,
 	FOREIGN KEY (username) REFERENCES Profiles(username)
 );
