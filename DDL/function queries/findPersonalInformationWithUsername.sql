@@ -1,0 +1,1 @@
+SELECT p.first_name, p.last_name, m.credit_card, m.birthday, m.height, m.weight FROM Profiles p JOIN Members m ON p.username = m.username WHERE p.username = 'jadfakhoury';
