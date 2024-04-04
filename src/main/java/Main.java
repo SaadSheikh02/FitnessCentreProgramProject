@@ -202,7 +202,7 @@ public class Main {
         String lastName = getLastName();
         Integer creditCard = getCreditCard();
         String userType = "TYPE_MEMBER";
-        String birthday = getBirthday();
+        String birthday = getDate("birthday", false);
 
         Random random = new Random();
         Double bmi = random.nextDouble(18.5, 25.0);
@@ -320,14 +320,14 @@ public class Main {
         return input.nextLine();
     }
 
-    private static String getBirthday() {
-        System.out.println("Enter birthday (YYYY-MM-DD): ");
+    private static String getDate(String context, boolean pastCurrentDate) {
+        System.out.println("Enter " + context + " (YYYY-MM-DD): ");
+        String actual_date = "";
 
-        if (input.hasNextLine()) {
-            input.nextLine();
+        // Keep reading lines until a non-empty line is received
+        while (actual_date.isEmpty()) {
+            actual_date = input.nextLine().trim();  // Trim to remove leading and trailing spaces
         }
-
-        String actual_date = input.nextLine();
 
         SimpleDateFormat expectedFormat = new SimpleDateFormat("yyyy-MM-dd");
         expectedFormat.setLenient(false);
@@ -335,18 +335,21 @@ public class Main {
         try {
             Date parsedDate = expectedFormat.parse(actual_date);
 
-            Date currDate = new Date();
-            if (currDate.before(parsedDate) || currDate.equals(parsedDate)){
-                System.out.println("Date cannot be past the current date");
-                return getBirthday();
+            if (!pastCurrentDate) {
+                Date currDate = new Date();
+                if (currDate.before(parsedDate) || currDate.equals(parsedDate)) {
+                    System.out.println("Date cannot be past the current date");
+                    return getDate(context, pastCurrentDate);
+                }
             }
 
             return actual_date;
         } catch (ParseException e) {
             System.out.println("Invalid date or date format.");
-            return getBirthday();
+            return getDate(context, pastCurrentDate);
         }
     }
+
 
     private static int getCreditCard() {
         System.out.println("Enter credit card number: ");
@@ -482,7 +485,7 @@ public class Main {
         String firstName = getFirstName();
         String lastName = getLastName();
         int creditCard = getCreditCard();
-        String birthday = getBirthday();
+        String birthday = getDate("birthday", false);
         int height = getHeight();
         int weight = getWeight();
 
@@ -492,7 +495,7 @@ public class Main {
 
         try{
             PreparedStatement prepStatement_profile = connection.prepareStatement(sql_profile_statement);
-            PreparedStatement preparedStatement_member = connection.prepareStatement(sql_member_statement);
+            PreparedStatement prepStatement_member = connection.prepareStatement(sql_member_statement);
 
             prepStatement_profile.setString(1, firstName);
             prepStatement_profile.setString(2, lastName);
@@ -501,23 +504,23 @@ public class Main {
             // adding user profile
             prepStatement_profile.executeUpdate();
 
-            preparedStatement_member.setInt(1, creditCard);
+            prepStatement_member.setInt(1, creditCard);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             try{
                 Date b_date = dateFormat.parse(birthday);
                 java.sql.Date sqlDate = new java.sql.Date(b_date.getTime());
-                preparedStatement_member.setDate(2, sqlDate);
+                prepStatement_member.setDate(2, sqlDate);
             } catch (ParseException | SQLException e) {
                 throw new RuntimeException(e);
             }
 
-            preparedStatement_member.setInt(3, height);
-            preparedStatement_member.setInt(4, weight);
-            preparedStatement_member.setString(5, username);
+            prepStatement_member.setInt(3, height);
+            prepStatement_member.setInt(4, weight);
+            prepStatement_member.setString(5, username);
 
             // adding base member info
-            preparedStatement_member.executeUpdate();
+            prepStatement_member.executeUpdate();
 
             System.out.println("Profile Created");
             menuDecider();
@@ -525,7 +528,6 @@ public class Main {
         catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     private static void fitnessGoals() {
@@ -551,7 +553,7 @@ public class Main {
                 input.nextLine();
                 switch (choice){
                     case 'y':
-//                        setFitnessGoals();
+                        setFitnessGoals();
                         break;
                     case 'n':
                         menuDecider();
@@ -571,6 +573,54 @@ public class Main {
         }
     }
 
+    private static void setFitnessGoals() {
+        String dietPlan = getDietPlan();
+        int goalWeight = getGoalWeight();
+        int goalSpeed = getGoalSpeed();
+        int goalLift = getGoalLift();
+        String weightDeadline = getDate("weight deadline", true);
+        String speedDeadline = getDate("speed deadline", true);
+        String liftDeadline = getDate("lift deadline", true);
+
+        String sql_statement = "UPDATE members SET diet_plan = ?, goal_weight = ?, goal_speed = ?, goal_lift = ?, weight_deadline = ?, speed_deadline = ?, lift_deadline = ? WHERE username = ?";
+
+        try{
+            PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
+
+            prepStatement.setString(1, dietPlan);
+            prepStatement.setInt(2, goalWeight);
+            prepStatement.setInt(3, goalSpeed);
+            prepStatement.setInt(4, goalLift);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try{
+                Date w_date = dateFormat.parse(weightDeadline);
+                Date s_date = dateFormat.parse(speedDeadline);
+                Date l_date = dateFormat.parse(liftDeadline);
+                java.sql.Date sqlWDate = new java.sql.Date(w_date.getTime());
+                java.sql.Date sqlSDate = new java.sql.Date(s_date.getTime());
+                java.sql.Date sqlLDate = new java.sql.Date(l_date.getTime());
+                prepStatement.setDate(5, sqlWDate);
+                prepStatement.setDate(6, sqlSDate);
+                prepStatement.setDate(7, sqlLDate);
+            } catch (ParseException | SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            prepStatement.setString(8, username);
+
+
+            // adding user profile
+            prepStatement.executeUpdate();
+
+            System.out.println("Fitness Goals Set");
+            menuDecider();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
         return input.nextInt();
@@ -581,6 +631,25 @@ public class Main {
         return input.nextInt();
     }
 
+    private static String getDietPlan() {
+        System.out.println("Enter diet plan description: ");
+        return input.nextLine();
+    }
+
+    private static int getGoalWeight() {
+        System.out.println("Enter goal weight (in kg): ");
+        return input.nextInt();
+    }
+
+    private static int getGoalSpeed(){
+        System.out.println("Enter goal speed (in m/s): ");
+        return input.nextInt();
+    }
+
+    private static int getGoalLift(){
+        System.out.println("Enter goal lift (in kg): ");
+        return input.nextInt();
+    }
 
 
 }

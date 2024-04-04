@@ -1,0 +1,1 @@
+UPDATE members SET diet_plan = 'pescatarian', goal_weight = 100, goal_speed = 10, goal_lift = 235, weight_deadline = '2024-10-28', speed_deadline = '2024-11-29', lift_deadline = '2024-12-30' WHERE username = 'jadfakhoury'
