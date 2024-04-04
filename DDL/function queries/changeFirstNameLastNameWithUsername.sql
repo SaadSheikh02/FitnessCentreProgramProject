@@ -1,0 +1,1 @@
+UPDATE profiles SET first_name = 'Jad', last_name = 'Fakhoury' WHERE username = 'jadfakhoury'

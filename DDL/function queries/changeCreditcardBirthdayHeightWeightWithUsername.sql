@@ -1,0 +1,1 @@
+UPDATE members SET credit_card = 6969, birthday = '2001-01-01', height = 200, weight = 100 WHERE username = 'jadfakhoury'

@@ -10,7 +10,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
+    private static String PORT = "5432";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
@@ -457,7 +457,7 @@ public class Main {
                 input.nextLine();
                 switch (choice){
                     case 'y':
-                        //setPersonalInformation();
+                        setPersonalInformation();
                         break;
                     case 'n':
                         menuDecider();
@@ -476,6 +476,67 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    private static void setPersonalInformation(){
+        String firstName = getFirstName();
+        String lastName = getLastName();
+        int creditCard = getCreditCard();
+        String birthday = getBirthday();
+        int height = getHeight();
+        int weight = getWeight();
+
+        String sql_profile_statement = "UPDATE profiles SET first_name = ?, last_name = ? WHERE username = ?";
+
+        String sql_member_statement = "UPDATE members SET credit_card = ?, birthday = ?, height = ?, weight = ? WHERE username = ?";
+
+        try{
+            PreparedStatement prepStatement_profile = connection.prepareStatement(sql_profile_statement);
+            PreparedStatement preparedStatement_member = connection.prepareStatement(sql_member_statement);
+
+            prepStatement_profile.setString(1, firstName);
+            prepStatement_profile.setString(2, lastName);
+            prepStatement_profile.setString(3, username);
+
+            // adding user profile
+            prepStatement_profile.executeUpdate();
+
+            preparedStatement_member.setInt(1, creditCard);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try{
+                Date b_date = dateFormat.parse(birthday);
+                java.sql.Date sqlDate = new java.sql.Date(b_date.getTime());
+                preparedStatement_member.setDate(2, sqlDate);
+            } catch (ParseException | SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            preparedStatement_member.setInt(3, height);
+            preparedStatement_member.setInt(4, weight);
+            preparedStatement_member.setString(5, username);
+
+            // adding base member info
+            preparedStatement_member.executeUpdate();
+
+            System.out.println("Profile Created");
+            menuDecider();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private static int getHeight() {
+        System.out.println("Enter height (in cm): ");
+        return input.nextInt();
+    }
+
+    private static int getWeight() {
+        System.out.println("Enter weight (in kg): ");
+        return input.nextInt();
+    }
+
 
 
 }
