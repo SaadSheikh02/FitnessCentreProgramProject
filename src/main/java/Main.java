@@ -10,7 +10,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
+    private static String PORT = "1433";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
@@ -582,7 +582,9 @@ public class Main {
         String speedDeadline = getDate("speed deadline", true);
         String liftDeadline = getDate("lift deadline", true);
 
-        String sql_statement = "UPDATE members SET diet_plan = ?, goal_weight = ?, goal_speed = ?, goal_lift = ?, weight_deadline = ?, speed_deadline = ?, lift_deadline = ? WHERE username = ?";
+        Random random = new Random();
+
+        String sql_statement = "UPDATE members SET diet_plan = ?, goal_weight = ?, goal_speed = ?, goal_lift = ?, weight_deadline = ?, speed_deadline = ?, lift_deadline = ?, weight_loss = ?, max_speed = ?, max_lift = ? WHERE username = ?";
 
         try{
             PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
@@ -603,11 +605,19 @@ public class Main {
                 prepStatement.setDate(5, sqlWDate);
                 prepStatement.setDate(6, sqlSDate);
                 prepStatement.setDate(7, sqlLDate);
+
+                int weightLoss = random.nextInt(0,70);
+                int maxSpeed = random.nextInt(0, 12);
+                int maxLift = random.nextInt(0, 400);
+
+                prepStatement.setInt(8, weightLoss);
+                prepStatement.setInt(9, maxSpeed);
+                prepStatement.setInt(10, maxLift);
             } catch (ParseException | SQLException e) {
                 throw new RuntimeException(e);
             }
 
-            prepStatement.setString(8, username);
+            prepStatement.setString(11, username);
 
 
             // adding user profile
