@@ -417,6 +417,7 @@ public class Main {
                 personalInformation();
                 break;
             case 2:
+                fitnessGoals();
                 break;
             case 3:
                 break;
@@ -525,6 +526,49 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+
+    private static void fitnessGoals() {
+        try {
+            String sql = "SELECT diet_plan, goal_weight, goal_speed, goal_lift, weight_deadline, speed_deadline, lift_deadline FROM members WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Move cursor to the first row
+            if (resultSet.next()) {
+                System.out.println("Diet Plan: " + resultSet.getString("diet_plan"));
+                System.out.println("Goal Weight: " + resultSet.getInt("goal_weight"));
+                System.out.println("Goal Speed: " + resultSet.getInt("goal_speed"));
+                System.out.println("Goal Lift: " + resultSet.getInt("goal_lift"));
+                System.out.println("Weight Deadline: " + resultSet.getDate("weight_deadline"));
+                System.out.println("Speed Deadline: " + resultSet.getDate("speed_deadline"));
+                System.out.println("Lift Deadline: " + resultSet.getDate("lift_deadline"));
+                System.out.println();
+
+                System.out.println("Would you like to change any of the information? (y/n)");
+                char choice = input.next().charAt(0);
+                input.nextLine();
+                switch (choice){
+                    case 'y':
+//                        setFitnessGoals();
+                        break;
+                    case 'n':
+                        menuDecider();
+                        break;
+                    default:
+                        fitnessGoals();
+                }
+            } else {
+                System.out.println("No data found for the given username.");
+                profileInformation();
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static int getHeight() {

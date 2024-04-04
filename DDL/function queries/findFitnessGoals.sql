@@ -1,0 +1,1 @@
+SELECT diet_plan, goal_weight, goal_speed, goal_lift, weight_deadline, speed_deadline, lift_deadline FROM members WHERE username = 'jadfakhoury'
