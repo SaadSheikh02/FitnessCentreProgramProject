@@ -10,7 +10,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
+    private static String PORT = "5432";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
@@ -423,8 +423,10 @@ public class Main {
                 fitnessGoals();
                 break;
             case 3:
+                healthMetrics();
                 break;
             case 4:
+
                 break;
             case 5:
                 break;
@@ -627,6 +629,35 @@ public class Main {
             menuDecider();
         }
         catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void healthMetrics() {
+        try {
+            String sql = "SELECT bmi, systolic_bp, diastolic_bp, heart_rate, bloodsugar_level FROM members WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Move cursor to the first row
+            if (resultSet.next()) {
+                System.out.println("BMI: " + resultSet.getInt("bmi"));
+                System.out.println("Systolic Blood Pressure: " + resultSet.getInt("systolic_bp"));
+                System.out.println("Diastolic Blood Pressure: " + resultSet.getInt("diastolic_bp"));
+                System.out.println("Heart Rate: " + resultSet.getInt("heart_rate"));
+                System.out.println("Blood Sugar Level: " + resultSet.getInt("bloodsugar_level"));
+                System.out.println();
+
+                menuDecider();
+            } else {
+                System.out.println("No data found for the given username.");
+                profileInformation();
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
