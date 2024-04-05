@@ -730,7 +730,7 @@ public class Main {
                 updateRoutine();
                 break;
             case 2:
-//                changeDietPlan();
+                changeDietPlan();
                 break;
             case 3:
                 menuDecider();
@@ -796,6 +796,25 @@ public class Main {
 
             System.out.println("Exercise Added");
             System.out.println();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void changeDietPlan(){
+        String dietPlan = getDietPlan();
+
+        String sql_statement = "UPDATE Members SET diet_plan = ? WHERE username = ?";
+
+        try{
+            PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
+            prepStatement.setString(1, dietPlan);
+            prepStatement.setString(2, username);
+            prepStatement.executeUpdate();
+            prepStatement.close();
+
+            System.out.println("Diet Plan Updated");
+            menuDecider();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
