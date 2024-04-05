@@ -1,0 +1,1 @@
+DELETE FROM Exercise_Routines WHERE username = 'jadfakhoury';

@@ -1,0 +1,1 @@
+INSERT INTO Exercise_Routines(username, exercise) VALUES('jadfakhoury', 'lateral pulldown');

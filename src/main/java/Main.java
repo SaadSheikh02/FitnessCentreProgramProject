@@ -693,8 +693,7 @@ public class Main {
                 input.nextLine();
                 switch (choice){
                     case 'y':
-                        System.out.println("setHealthActions() IMPLEMENTATION PENDING");
-//                        setHealthActions();
+                        setHealthActions();
                         break;
                     case 'n':
                         menuDecider();
@@ -714,6 +713,94 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    private static void setHealthActions(){
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Update Routine");
+        System.out.println("2) Change Diet Plan");
+        System.out.println("3) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                updateRoutine();
+                break;
+            case 2:
+//                changeDietPlan();
+                break;
+            case 3:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                setHealthActions();
+        }
+    }
+
+    private static void updateRoutine(){
+        clearExistingRoutine();
+
+        boolean addAnother = true;
+
+        while(addAnother){
+            addNewExercise();
+
+            System.out.println("Would you like to add another exercise? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+            switch (choice){
+                case 'y':
+                    break;
+                case 'n':
+                    addAnother = false;
+                    break;
+                default:
+                    System.out.println("Invalid input. Please enter y or n after entering an exercise");
+            }
+        }
+
+        healthActions();
+    }
+
+    private static void clearExistingRoutine(){
+        String sql_clear_statment = "DELETE FROM Exercise_Routines WHERE username = ?";
+        try {
+            // Clearing Existing Exercise Routine
+            PreparedStatement prepClearStatement = connection.prepareStatement(sql_clear_statment);
+            prepClearStatement.setString(1, username);
+            prepClearStatement.executeUpdate();
+            prepClearStatement.close();
+
+            System.out.println("Existing Routine Cleared");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void addNewExercise(){
+        String exercise = getExercise();
+
+        String sql_additon_statement = "INSERT INTO Exercise_Routines(username, exercise) VALUES(?, ?)";
+
+        try{
+            PreparedStatement prepAdditionStatement = connection.prepareStatement(sql_additon_statement);
+            prepAdditionStatement.setString(1, username);
+            prepAdditionStatement.setString(2, exercise);
+            prepAdditionStatement.executeUpdate();
+            prepAdditionStatement.close();
+
+            System.out.println("Exercise Added");
+            System.out.println();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
@@ -745,5 +832,8 @@ public class Main {
         return input.nextInt();
     }
 
-
+    private static String getExercise(){
+        System.out.println("Enter exercise: ");
+        return input.nextLine();
+    }
 }
