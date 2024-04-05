@@ -814,10 +814,11 @@ public class Main {
             prepStatement.close();
 
             System.out.println("Diet Plan Updated");
-            menuDecider();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        healthActions();
     }
 
 
