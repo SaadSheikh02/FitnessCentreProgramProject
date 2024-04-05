@@ -36,14 +36,14 @@ CREATE TABLE Rooms (
 );
 
 CREATE TABLE Exercise_Routines (
-	member_id TEXT,
+	username TEXT,
 	exercise TEXT,
-	FOREIGN KEY (member_id) REFERENCES Profiles(username)
+	FOREIGN KEY (username) REFERENCES Profiles(username)
 );
 
 CREATE TABLE Health_Statistics (
-	member_id TEXT,
-	FOREIGN KEY (member_id) REFERENCES Profiles(username),
+	username TEXT,
+	FOREIGN KEY (username) REFERENCES Profiles(username),
 	weight NUMERIC,
 	speed NUMERIC,
 	lift NUMERIC
@@ -81,8 +81,8 @@ CREATE TABLE Dates_Trainer_Unavailable (
 CREATE TABLE Class_Members (
     class_id INT,
 	FOREIGN KEY (class_id) REFERENCES Classes(class_id),
-	member_id TEXT,
-	FOREIGN KEY(member_id) REFERENCES Profiles(username)
+	username TEXT,
+	FOREIGN KEY(username) REFERENCES Profiles(username)
 );
 
 CREATE TABLE Bookings (
@@ -102,8 +102,8 @@ CREATE TABLE Equipment (
 
 CREATE TABLE Bills(
 	bill_id SERIAL PRIMARY KEY,
-	member_id TEXT,
-	FOREIGN KEY(member_id) REFERENCES Profiles(username),
+	username TEXT,
+	FOREIGN KEY(username) REFERENCES Profiles(username),
 	price INT,
 	date_issued date
 );
