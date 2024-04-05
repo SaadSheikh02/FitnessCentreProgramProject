@@ -1,0 +1,1 @@
+SELECT diet_plan FROM Members WHERE username = 'jadfakhoury'

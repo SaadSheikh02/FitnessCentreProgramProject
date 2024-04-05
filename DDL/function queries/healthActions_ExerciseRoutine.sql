@@ -1,0 +1,1 @@
+SELECT e.exercise FROM Exercise_Routines e JOIN Members m ON e.username = m.username WHERE e.username = 'jadfakhoury'

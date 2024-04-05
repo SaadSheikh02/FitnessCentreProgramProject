@@ -426,7 +426,7 @@ public class Main {
                 healthMetrics();
                 break;
             case 4:
-
+                healthActions();
                 break;
             case 5:
                 break;
@@ -657,6 +657,59 @@ public class Main {
 
             resultSet.close();
             statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void healthActions(){
+        try {
+            String sql_exercise = "SELECT e.exercise FROM Exercise_Routines e JOIN Members m ON e.username = m.username WHERE e.username = ?";
+            String sql_diet_plan = "SELECT diet_plan FROM Members WHERE username = ?";
+            PreparedStatement statement_exercise = connection.prepareStatement(sql_exercise);
+            PreparedStatement statement_diet_plan = connection.prepareStatement(sql_diet_plan);
+            statement_exercise.setString(1, username);
+            statement_diet_plan.setString(1, username);
+            ResultSet resultSet_exercise = statement_exercise.executeQuery();
+            ResultSet resultSet_diet_plan = statement_diet_plan.executeQuery();
+
+            if(resultSet_diet_plan.next()){
+                System.out.println("Diet Plan: " + resultSet_diet_plan.getString("diet_plan"));
+            }
+            boolean dataFound = false;
+            String dietPlan = null;
+            // Move cursor to the first row
+            while (resultSet_exercise.next()) {
+                if(!dataFound){
+                    dataFound = true;
+                }
+
+                System.out.println("Exercise: " + resultSet_exercise.getString("exercise"));
+            }
+
+            if(dataFound){
+                System.out.println("Would you like to change any of the information? (y/n)");
+                char choice = input.next().charAt(0);
+                input.nextLine();
+                switch (choice){
+                    case 'y':
+                        System.out.println("setHealthActions() IMPLEMENTATION PENDING");
+//                        setHealthActions();
+                        break;
+                    case 'n':
+                        menuDecider();
+                        break;
+                    default:
+                        healthActions();
+                }
+            }
+            else {
+                System.out.println("No data found for the given username.");
+                profileInformation();
+            }
+
+            resultSet_exercise.close();
+            statement_exercise.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
