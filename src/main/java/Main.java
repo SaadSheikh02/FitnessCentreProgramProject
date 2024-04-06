@@ -827,7 +827,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                //viewHealthRecords();
+                viewHealthRecords();
                 break;
             case 2:
                 //addHealthEntry();
@@ -840,6 +840,54 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 healthRecords();
+        }
+    }
+
+    private static void viewHealthRecords(){
+        try {
+            String weightQuery = "SELECT weight FROM Weight_Statistics WHERE username = ?";
+            PreparedStatement weightStatement = connection.prepareStatement(weightQuery);
+            weightStatement.setString(1, username);
+            ResultSet weightResultSet = weightStatement.executeQuery();
+
+            System.out.println("Weight Statistics:");
+            while (weightResultSet.next()) {
+                System.out.println("Weight: " + weightResultSet.getInt("weight") + " kg");
+            }
+            System.out.println();
+
+            String speedQuery = "SELECT speed FROM Speed_Statistics WHERE username = ?";
+            PreparedStatement speedStatement = connection.prepareStatement(speedQuery);
+            speedStatement.setString(1, username);
+            ResultSet speedResultSet = speedStatement.executeQuery();
+
+            System.out.println("Speed Statistics:");
+            while (speedResultSet.next()) {
+                System.out.println("Speed: " + speedResultSet.getInt("speed") + " m/s");
+            }
+            System.out.println();
+
+            String liftQuery = "SELECT lift FROM Lift_Statistics WHERE username = ?";
+            PreparedStatement liftStatement = connection.prepareStatement(liftQuery);
+            liftStatement.setString(1, username);
+            ResultSet liftResultSet = liftStatement.executeQuery();
+
+            System.out.println("Lift Statistics:");
+            while (liftResultSet.next()) {
+                System.out.println("Lift: " + liftResultSet.getInt("lift")  + " kg");
+            }
+            System.out.println();
+
+            weightResultSet.close();
+            weightStatement.close();
+            speedResultSet.close();
+            speedStatement.close();
+            liftResultSet.close();
+            liftStatement.close();
+
+            healthRecords();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
     private static void healthStatistics() {
