@@ -408,8 +408,7 @@ public class Main {
         System.out.println("3) View Health Metrics");
         System.out.println("4) View Health Action");
         System.out.println("5) View Health Statistics");
-        System.out.println("6) View Fitness Achievements");
-        System.out.println("7) Go Back");
+        System.out.println("6) Go Back");
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
@@ -432,9 +431,6 @@ public class Main {
                 healthStatistics();
                 break;
             case 6:
-                fitnessAchievements();
-                break;
-            case 7:
                 menuDecider();
                 break;
             default:
@@ -468,7 +464,7 @@ public class Main {
                         setPersonalInformation();
                         break;
                     case 'n':
-                        menuDecider();
+                        profileInformation();
                         break;
                     default:
                         personalInformation();
@@ -560,7 +556,7 @@ public class Main {
                         setFitnessGoals();
                         break;
                     case 'n':
-                        menuDecider();
+                        profileInformation();
                         break;
                     default:
                         fitnessGoals();
@@ -588,7 +584,7 @@ public class Main {
 
         Random random = new Random();
 
-        String sql_statement = "UPDATE members SET diet_plan = ?, goal_weight = ?, goal_speed = ?, goal_lift = ?, weight_deadline = ?, speed_deadline = ?, lift_deadline = ?, weight_loss = ?, max_speed = ?, max_lift = ? WHERE username = ?";
+        String sql_statement = "UPDATE members SET diet_plan = ?, goal_weight = ?, goal_speed = ?, goal_lift = ?, weight_deadline = ?, speed_deadline = ?, lift_deadline = ? WHERE username = ?";
 
         try{
             PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
@@ -610,18 +606,11 @@ public class Main {
                 prepStatement.setDate(6, sqlSDate);
                 prepStatement.setDate(7, sqlLDate);
 
-                int weightLoss = random.nextInt(0,70);
-                int maxSpeed = random.nextInt(0, 12);
-                int maxLift = random.nextInt(0, 400);
-
-                prepStatement.setInt(8, weightLoss);
-                prepStatement.setInt(9, maxSpeed);
-                prepStatement.setInt(10, maxLift);
             } catch (ParseException | SQLException e) {
                 throw new RuntimeException(e);
             }
 
-            prepStatement.setString(11, username);
+            prepStatement.setString(8, username);
 
 
             // adding user profile
@@ -651,7 +640,7 @@ public class Main {
                 System.out.println("Blood Sugar Level: " + resultSet.getInt("bloodsugar_level"));
                 System.out.println();
 
-                menuDecider();
+                profileInformation();
             } else {
                 System.out.println("No data found for the given username.");
                 profileInformation();
@@ -700,7 +689,7 @@ public class Main {
                         setHealthActions();
                         break;
                     case 'n':
-                        menuDecider();
+                        profileInformation();
                         break;
                     default:
                         healthActions();
@@ -893,73 +882,11 @@ public class Main {
             liftResultSet.close();
             liftStatement.close();
 
-            menuDecider();
+            profileInformation();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
-
-    private static void fitnessAchievements(){
-        String sql_statement = "SELECT weight_loss, max_speed, max_lift FROM Members WHERE username = ?";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                System.out.println("Weight Loss: " + resultSet.getInt( "weight_loss"));
-                System.out.println("Maximum Speed: " + resultSet.getInt("max_speed"));
-                System.out.println("Maximum Lift: " + resultSet.getInt( "max_lift"));
-            }
-
-            System.out.println("Would you like to update information? (y/n)");
-            char choice = input.next().charAt(0);
-            input.nextLine();
-            switch (choice){
-                case 'y':
-                    setFitnessAchievements();
-                    break;
-                case 'n':
-                    profileInformation();
-                    break;
-                default:
-                    fitnessAchievements();
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void setFitnessAchievements(){
-        int weightLoss = getWeightLoss();
-        int maxSpeed = getMaxSpeed();
-        int maxLift = getMaxLift();
-
-        String sql_statement = "UPDATE members SET weight_loss = ?, max_speed = ?, max_lift = ? WHERE username = ?";
-
-        try{
-            PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
-
-            prepStatement.setInt(1, weightLoss);
-            prepStatement.setInt(2, maxSpeed);
-            prepStatement.setInt(3, maxLift);
-            prepStatement.setString(4, username);
-
-            prepStatement.executeUpdate();
-
-            System.out.println("Fitness Achievements Updated");
-            prepStatement.close();
-
-            fitnessAchievements();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
 
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
@@ -994,20 +921,5 @@ public class Main {
     private static String getExercise(){
         System.out.println("Enter exercise: ");
         return input.nextLine();
-    }
-
-    private static int getWeightLoss(){
-        System.out.println("Enter weight loss (in kg): ");
-        return input.nextInt();
-    }
-
-    private static int getMaxSpeed(){
-        System.out.println("Enter max speed (in m/s): ");
-        return input.nextInt();
-    }
-
-    private static int getMaxLift(){
-        System.out.println("Enter max lift (in kg): ");
-        return input.nextInt();
     }
 }
