@@ -407,7 +407,7 @@ public class Main {
         System.out.println("2) View Fitness Goals");
         System.out.println("3) View Health Metrics");
         System.out.println("4) View Health Action");
-        System.out.println("5) View Health Statistics");
+        System.out.println("5) View Health Records");
         System.out.println("6) Go Back");
         System.out.println();
         System.out.println("Enter the number of your choice: ");
@@ -428,7 +428,7 @@ public class Main {
                 healthActions();
                 break;
             case 5:
-                healthStatistics();
+                healthRecords();
                 break;
             case 6:
                 menuDecider();
@@ -813,7 +813,35 @@ public class Main {
 
         healthActions();
     }
+    private static void healthRecords() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) View Full Records");
+        System.out.println("2) Add Entry");
+        System.out.println("3) View Health Statistics");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
 
+        switch (choice) {
+            case 1:
+                //viewHealthRecords();
+                break;
+            case 2:
+                //addHealthEntry();
+                break;
+            case 3:
+                healthStatistics();
+            case 4:
+                profileInformation();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                healthRecords();
+        }
+    }
     private static void healthStatistics() {
         try {
             String sql_weight_statement = "SELECT\n" +
@@ -882,7 +910,7 @@ public class Main {
             liftResultSet.close();
             liftStatement.close();
 
-            profileInformation();
+            healthRecords();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
