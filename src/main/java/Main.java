@@ -11,9 +11,9 @@ public class Main {
 
     private static String HOST = "localhost";
     private static String PORT = "5432";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
+    private static String PASSWORD = "DarkSniper22";
 
     private static String username = null;
 
@@ -825,50 +825,80 @@ public class Main {
         healthActions();
     }
 
-    private static void healthStatistics(){
-        String sql_statement = "SELECT\n" +
-                "    MAX(weight) AS max_weight,\n" +
-                "    MIN(weight) AS min_weight,\n" +
-                "    AVG(weight) AS avg_weight,\n" +
-                "    MAX(speed) AS max_speed,\n" +
-                "    MIN(speed) AS min_speed,\n" +
-                "    AVG(speed) AS avg_speed,\n" +
-                "    MAX(lift) AS max_lift,\n" +
-                "    MIN(lift) AS min_lift,\n" +
-                "    AVG(lift) AS avg_lift\n" +
-                "FROM Health_Statistics\n" +
-                "WHERE username = ?;";
+    private static void healthStatistics() {
+        try {
+            String sql_weight_statement = "SELECT\n" +
+                    "    MAX(weight) AS max_weight,\n" +
+                    "    MIN(weight) AS min_weight,\n" +
+                    "    AVG(weight) AS avg_weight\n" +
+                    "FROM Weight_Statistics\n" +
+                    "WHERE username = ?;";
+            String sql_speed_statement = "SELECT\n" +
+                    "    MAX(speed) AS max_speed,\n" +
+                    "    MIN(speed) AS min_speed,\n" +
+                    "    AVG(speed) AS avg_speed\n" +
+                    "FROM Speed_Statistics\n" +
+                    "WHERE username = ?;";
+            String sql_lift_statement = "SELECT\n" +
+                    "    MAX(lift) AS max_lift,\n" +
+                    "    MIN(lift) AS min_lift,\n" +
+                    "    AVG(lift) AS avg_lift\n" +
+                    "FROM Lift_Statistics\n" +
+                    "WHERE username = ?;";
 
-        try{
-            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            PreparedStatement weightStatement = connection.prepareStatement(sql_weight_statement);
+            weightStatement.setString(1, username);
+            ResultSet weightResultSet = weightStatement.executeQuery();
 
-            if(resultSet.next()){
-                System.out.println("Maximum Weight: " + resultSet.getInt( "max_weight"));
-                System.out.println("Minimum Weight: " + resultSet.getInt("min_weight"));
-                System.out.println("Average Weight: " + resultSet.getInt( "avg_weight"));
 
-                System.out.println("Maximum Speed: " + resultSet.getInt("max_speed"));
-                System.out.println("Minimum Speed: " + resultSet.getInt("min_speed"));
-                System.out.println("Average Speed: " + resultSet.getInt("avg_speed"));
-
-                System.out.println("Maximum Lift: " + resultSet.getInt("max_lift"));
-                System.out.println("Minimum Lift: " + resultSet.getInt("min_lift"));
-                System.out.println("Average Lift: " + resultSet.getInt("avg_lift"));
+            if (weightResultSet.next()) {
+                System.out.println("Weight Statistics:");
+                System.out.println("Maximum Weight: " + weightResultSet.getFloat("max_weight"));
+                System.out.println("Minimum Weight: " + weightResultSet.getFloat("min_weight"));
+                System.out.println("Average Weight: " + weightResultSet.getFloat("avg_weight"));
+            } else {
+                System.out.println("No weight statistics found for the given username.");
             }
-            else{
-                System.out.println("No data found for the given username.");
+
+            PreparedStatement speedStatement = connection.prepareStatement(sql_speed_statement);
+            speedStatement.setString(1, username);
+            ResultSet speedResultSet = speedStatement.executeQuery();
+
+            if (speedResultSet.next()) {
+                System.out.println("Speed Statistics:");
+                System.out.println("Maximum Speed: " + speedResultSet.getInt("max_speed"));
+                System.out.println("Minimum Speed: " + speedResultSet.getInt("min_speed"));
+                System.out.println("Average Speed: " + speedResultSet.getInt("avg_speed"));
+            } else {
+                System.out.println("No speed statistics found for the given username.");
             }
+
+            PreparedStatement liftStatement = connection.prepareStatement(sql_lift_statement);
+            liftStatement.setString(1, username);
+            ResultSet liftResultSet = liftStatement.executeQuery();
+
+            if (liftResultSet.next()) {
+                System.out.println("Lift Statistics:");
+                System.out.println("Maximum Lift: " + liftResultSet.getInt("max_lift"));
+                System.out.println("Minimum Lift: " + liftResultSet.getInt("min_lift"));
+                System.out.println("Average Lift: " + liftResultSet.getInt("avg_lift"));
+            } else {
+                System.out.println("No lift statistics found for the given username.");
+            }
+
+            weightResultSet.close();
+            weightStatement.close();
+            speedResultSet.close();
+            speedStatement.close();
+            liftResultSet.close();
+            liftStatement.close();
 
             menuDecider();
-
-            resultSet.close();
-            preparedStatement.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     private static void fitnessAchievements(){
         String sql_statement = "SELECT weight_loss, max_speed, max_lift FROM Members WHERE username = ?";
