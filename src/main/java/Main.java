@@ -432,6 +432,7 @@ public class Main {
                 healthStatistics();
                 break;
             case 6:
+                fitnessAchievements();
                 break;
             case 7:
                 menuDecider();
@@ -677,8 +678,10 @@ public class Main {
             if(resultSet_diet_plan.next()){
                 System.out.println("Diet Plan: " + resultSet_diet_plan.getString("diet_plan"));
             }
+
             boolean dataFound = false;
             String dietPlan = null;
+
             // Move cursor to the first row
             while (resultSet_exercise.next()) {
                 if(!dataFound){
@@ -853,11 +856,48 @@ public class Main {
                 System.out.println("Maximum Lift: " + resultSet.getInt("max_lift"));
                 System.out.println("Minimum Lift: " + resultSet.getInt("min_lift"));
                 System.out.println("Average Lift: " + resultSet.getInt("avg_lift"));
-                menuDecider();
             }
+            else{
+                System.out.println("No data found for the given username.");
+            }
+
+            menuDecider();
 
             resultSet.close();
             preparedStatement.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void fitnessAchievements(){
+        String sql_statement = "SELECT weight_loss, max_speed, max_lift FROM Members WHERE username = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                System.out.println("Weight Loss: " + resultSet.getInt( "weight_loss"));
+                System.out.println("Maximum Speed: " + resultSet.getInt("max_speed"));
+                System.out.println("Maximum Lift: " + resultSet.getInt( "max_lift"));
+            }
+
+            System.out.println("Would you like to update information? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+            switch (choice){
+                case 'y':
+//                    setFitnessAchievements();
+                    break;
+                case 'n':
+                    profileInformation();
+                    break;
+                default:
+                    fitnessAchievements();
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

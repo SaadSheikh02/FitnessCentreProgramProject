@@ -1,0 +1,1 @@
+SELECT weight_loss, max_speed, max_lift FROM Members WHERE username = 'jadfakhoury'
