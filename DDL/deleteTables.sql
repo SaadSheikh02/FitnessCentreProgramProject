@@ -11,4 +11,3 @@ DROP TABLE weight_statistics;
 DROP TABLE speed_statistics;
 DROP TABLE lift_statistics;
 DROP TABLE profiles;
-DROP TABLE rooms;

@@ -10,6 +10,18 @@ INSERT INTO
 Profiles (username, passwords, first_name, last_name, user_type) 
 VALUES ('sonic', 'speed', 'Sonic', 'Hedgehog', 'TYPE_TRAINER');
 
+INSERT INTO
+Dates_Trainer_Available (trainer_id, start_trainer_date, start_time_of_day, end_trainer_date, end_time_of_day)
+VALUES ('sonic', '2024-05-01', 'MORNING', '2024-05-31', 'EVENING');
+
+INSERT INTO
+Classes (class_id, trainer_id, room_id, class_type, class_description, class_date, time_of_day)
+VALUES (1, 'sonic', 1, 'PERSONAL', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
+
+INSERT INTO
+Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day)
+VALUES ('sonic', '2024-05-15', 'AFTERNOON');
+
 INSERT INTO 
 Profiles (username, passwords, first_name, last_name, user_type) 
 VALUES ('shadow', 'edge', 'Shadow', 'Hedgehog', 'TYPE_TRAINER');

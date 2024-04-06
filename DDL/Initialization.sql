@@ -27,11 +27,6 @@ CREATE TABLE Members (
 	FOREIGN KEY (username) REFERENCES Profiles(username)
 );
 
-CREATE TABLE Rooms (
-	room_id SERIAL PRIMARY KEY,
-	booking_status TEXT
-);
-
 CREATE TABLE Exercise_Routines (
 	username TEXT,
 	exercise TEXT,
@@ -62,8 +57,8 @@ CREATE TABLE Classes (
 	trainer_id TEXT,
 	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
 	room_id INT,
-	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
-	class_type INT,
+	class_type TEXT,
+	class_description TEXT,
 	class_date DATE,
 	time_of_day TEXT
 );
@@ -94,7 +89,6 @@ CREATE TABLE Class_Members (
 
 CREATE TABLE Bookings (
 	room_id INT,
-	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
 	class_date DATE,
 	time_of_day TEXT,
 	event_info TEXT
@@ -103,7 +97,6 @@ CREATE TABLE Bookings (
 CREATE TABLE Equipment (
 	equipment_id SERIAL PRIMARY KEY,
 	room_id INT,
-	FOREIGN KEY(room_id) REFERENCES Rooms(room_id),
 	equipment_status TEXT
 );
 
