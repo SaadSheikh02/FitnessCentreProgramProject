@@ -429,6 +429,7 @@ public class Main {
                 healthActions();
                 break;
             case 5:
+                healthStatistics();
                 break;
             case 6:
                 break;
@@ -819,6 +820,47 @@ public class Main {
         }
 
         healthActions();
+    }
+
+    private static void healthStatistics(){
+        String sql_statement = "SELECT\n" +
+                "    MAX(weight) AS max_weight,\n" +
+                "    MIN(weight) AS min_weight,\n" +
+                "    AVG(weight) AS avg_weight,\n" +
+                "    MAX(speed) AS max_speed,\n" +
+                "    MIN(speed) AS min_speed,\n" +
+                "    AVG(speed) AS avg_speed,\n" +
+                "    MAX(lift) AS max_lift,\n" +
+                "    MIN(lift) AS min_lift,\n" +
+                "    AVG(lift) AS avg_lift\n" +
+                "FROM Health_Statistics\n" +
+                "WHERE username = ?;";
+
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                System.out.println("Maximum Weight: " + resultSet.getInt( "max_weight"));
+                System.out.println("Minimum Weight: " + resultSet.getInt("min_weight"));
+                System.out.println("Average Weight: " + resultSet.getInt( "avg_weight"));
+
+                System.out.println("Maximum Speed: " + resultSet.getInt("max_speed"));
+                System.out.println("Minimum Speed: " + resultSet.getInt("min_speed"));
+                System.out.println("Average Speed: " + resultSet.getInt("avg_speed"));
+
+                System.out.println("Maximum Lift: " + resultSet.getInt("max_lift"));
+                System.out.println("Minimum Lift: " + resultSet.getInt("min_lift"));
+                System.out.println("Average Lift: " + resultSet.getInt("avg_lift"));
+                menuDecider();
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
