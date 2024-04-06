@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Main {
     static Connection connection;
@@ -1075,7 +1077,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                //personalTraining();
+                personalTraining();
                 break;
             case 2:
                 //groupTraining();
@@ -1086,6 +1088,115 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 memberScheduleManagement();
+        }
+    }
+
+    private static void personalTraining() {
+        String date = getDate("session date", true);
+        System.out.println("What time of day?");
+        System.out.println("1. Morning");
+        System.out.println("2. Afternoon");
+        System.out.println("3. Evening");
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        String timeOfDay = "";
+        switch (choice) {
+            case 1:
+                timeOfDay = "MORNING";
+                break;
+            case 2:
+                timeOfDay = "AFTERNOON";
+                break;
+            case 3:
+                timeOfDay = "EVENING";
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                personalTraining();
+        }
+
+        try {
+            String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
+                    "FROM Dates_Trainer_Available d " +
+                    "JOIN Profiles p ON d.trainer_id = p.username " +
+                    "WHERE CAST(? AS DATE) BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "AND NOT EXISTS (" +
+                    "    SELECT 1 " +
+                    "    FROM Dates_Trainer_Unavailable u " +
+                    "    WHERE u.trainer_id = d.trainer_id " +
+                    "    AND u.trainer_date = CAST(? AS DATE)" +
+                    ")";
+            PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
+            availableTrainersStatement.setString(1, date);
+            availableTrainersStatement.setString(2, date);
+            ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
+
+            List<String> availableTrainers = new ArrayList<>();
+            List<String> availableIDs = new ArrayList<>();
+            while (availableTrainersResult.next()) {
+                String firstName = availableTrainersResult.getString("first_name");
+                String lastName = availableTrainersResult.getString("last_name");
+                String ID = availableTrainersResult.getString("username");
+                availableTrainers.add(firstName + " " + lastName);
+                availableIDs.add(ID);
+            }
+
+            System.out.println("Available Trainers:");
+            for (int i = 0; i < availableTrainers.size(); i++) {
+                System.out.println((i + 1) + ". " + availableTrainers.get(i));
+            }
+
+            if (availableTrainers.isEmpty()){
+                System.out.println("There are no available trainers during that time.");
+                memberScheduleManagement();
+                return;
+            }
+
+            System.out.println("Enter the number corresponding to the trainer you want to select: ");
+            int trainerChoice = input.nextInt();
+            input.nextLine();
+
+            if (trainerChoice < 1 || trainerChoice > availableTrainers.size()) {
+                System.out.println("Invalid choice. Try again.");
+                personalTraining();
+                return;
+            }
+            String selectedTrainer = availableIDs.get(trainerChoice - 1);
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
+            PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
+            insertUnavailableStatement.setString(1, selectedTrainer);
+            insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date)); // Convert string to java.sql.Date
+            insertUnavailableStatement.setString(3, timeOfDay);
+            insertUnavailableStatement.executeUpdate();
+
+
+            int sessionPrice = 50;
+
+            String insertBillQuery = "INSERT INTO Bills (username, price, date_issued) VALUES (?, ?, CURRENT_DATE)";
+            PreparedStatement insertBillStatement = connection.prepareStatement(insertBillQuery);
+            insertBillStatement.setString(1, username);
+            insertBillStatement.setInt(2, sessionPrice);
+            insertBillStatement.executeUpdate();
+
+            System.out.println("Do you want to schedule another personal session? (y/n)");
+            char choice2 = input.next().charAt(0);
+            input.nextLine();
+            switch (choice2){
+                case 'y':
+                    personalTraining();
+                    break;
+                default:
+                    memberScheduleManagement();
+            }
+
+            availableTrainersResult.close();
+            availableTrainersStatement.close();
+            insertUnavailableStatement.close();
+            insertBillStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
