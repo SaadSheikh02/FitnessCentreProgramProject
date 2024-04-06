@@ -628,7 +628,7 @@ public class Main {
             prepStatement.executeUpdate();
 
             System.out.println("Fitness Goals Set");
-            menuDecider();
+            fitnessGoals();
         }
         catch (Exception e){
             e.printStackTrace();
@@ -889,7 +889,7 @@ public class Main {
             input.nextLine();
             switch (choice){
                 case 'y':
-//                    setFitnessAchievements();
+                    setFitnessAchievements();
                     break;
                 case 'n':
                     profileInformation();
@@ -900,6 +900,33 @@ public class Main {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void setFitnessAchievements(){
+        int weightLoss = getWeightLoss();
+        int maxSpeed = getMaxSpeed();
+        int maxLift = getMaxLift();
+
+        String sql_statement = "UPDATE members SET weight_loss = ?, max_speed = ?, max_lift = ? WHERE username = ?";
+
+        try{
+            PreparedStatement prepStatement = connection.prepareStatement(sql_statement);
+
+            prepStatement.setInt(1, weightLoss);
+            prepStatement.setInt(2, maxSpeed);
+            prepStatement.setInt(3, maxLift);
+            prepStatement.setString(4, username);
+
+            prepStatement.executeUpdate();
+
+            System.out.println("Fitness Achievements Updated");
+            prepStatement.close();
+
+            fitnessAchievements();
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -937,5 +964,20 @@ public class Main {
     private static String getExercise(){
         System.out.println("Enter exercise: ");
         return input.nextLine();
+    }
+
+    private static int getWeightLoss(){
+        System.out.println("Enter weight loss (in kg): ");
+        return input.nextInt();
+    }
+
+    private static int getMaxSpeed(){
+        System.out.println("Enter max speed (in m/s): ");
+        return input.nextInt();
+    }
+
+    private static int getMaxLift(){
+        System.out.println("Enter max lift (in kg): ");
+        return input.nextInt();
     }
 }
