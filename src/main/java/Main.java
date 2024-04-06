@@ -129,6 +129,7 @@ public class Main {
                 profileInformation();
                 break;
             case 2:
+                memberScheduleManagement();
                 break;
             case 3:
                 userLogout();
@@ -1058,6 +1059,33 @@ public class Main {
             healthRecords();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void memberScheduleManagement() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Book a personal session");
+        System.out.println("2) Book a group session");
+        System.out.println("3) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                //personalTraining();
+                break;
+            case 2:
+                //groupTraining();
+                break;
+            case 3:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                memberScheduleManagement();
         }
     }
 
