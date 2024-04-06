@@ -31,3 +31,10 @@ VALUES ('jadfakhoury', 'burpees'),
 ('jadfakhoury', 'pushups'),
 ('jadfakhoury', 'mountain climbers'),
 ('jadfakhoury', 'situps');
+
+INSERT INTO Health_Statistics (username, weight, speed, lift) VALUES
+('jadfakhoury', 70, 10, 100),
+('jadfakhoury', 72, 11, 105),
+('jadfakhoury', 68, 9, 95),
+('jadfakhoury', 75, 12, 110),
+('jadfakhoury', 65, 8, 90);
