@@ -830,7 +830,7 @@ public class Main {
                 viewHealthRecords();
                 break;
             case 2:
-                //addHealthEntry();
+                addHealthEntry();
                 break;
             case 3:
                 healthStatistics();
@@ -888,6 +888,103 @@ public class Main {
             healthRecords();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void addHealthEntry() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Add to weight statistics");
+        System.out.println("2) Add to speed statistics");
+        System.out.println("3) Add to lift statistics");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                addWeightEntry();
+                break;
+            case 2:
+                addSpeedEntry();
+                break;
+            case 3:
+                addLiftEntry();
+                break;
+            case 4:
+                healthRecords();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                addHealthEntry();
+        }
+    }
+
+    private static void addWeightEntry() {
+        try {
+            System.out.println("Enter weight: ");
+            int weight = input.nextInt();
+            input.nextLine();
+
+            String sql = "INSERT INTO Weight_Statistics (username, weight) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setInt(2, weight);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {System.out.println("Weight entry added successfully.");}
+            else {System.out.println("Failed to add weight entry.");}
+
+            statement.close();
+            addHealthEntry();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addSpeedEntry() {
+        try {
+            System.out.println("Enter speed: ");
+            int speed = input.nextInt();
+            input.nextLine();
+
+            String sql = "INSERT INTO Speed_Statistics (username, speed) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setInt(2, speed);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {System.out.println("Speed entry added successfully.");}
+            else {System.out.println("Failed to add speed entry.");}
+
+            statement.close();
+            addHealthEntry();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addLiftEntry() {
+        try {
+            System.out.println("Enter lift: ");
+            int lift = input.nextInt();
+            input.nextLine();
+
+            String sql = "INSERT INTO Lift_Statistics (username, lift) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setInt(2, lift);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {System.out.println("Lift entry added successfully.");}
+            else {System.out.println("Failed to add lift entry.");}
+
+            statement.close();
+            addHealthEntry();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     private static void healthStatistics() {
