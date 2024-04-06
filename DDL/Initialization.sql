@@ -41,11 +41,21 @@ CREATE TABLE Exercise_Routines (
 	FOREIGN KEY (username) REFERENCES Profiles(username)
 );
 
-CREATE TABLE Health_Statistics (
+CREATE TABLE Weight_Statistics (
 	username TEXT,
 	FOREIGN KEY (username) REFERENCES Profiles(username),
-	weight NUMERIC,
-	speed NUMERIC,
+	weight NUMERIC
+);
+
+CREATE TABLE Speed_Statistics (
+	username TEXT,
+	FOREIGN KEY (username) REFERENCES Profiles(username),
+	speed NUMERIC
+);
+
+CREATE TABLE Lift_Statistics (
+	username TEXT,
+	FOREIGN KEY (username) REFERENCES Profiles(username),
 	lift NUMERIC
 );
 

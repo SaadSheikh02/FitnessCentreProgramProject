@@ -32,9 +32,23 @@ VALUES ('jadfakhoury', 'burpees'),
 ('jadfakhoury', 'mountain climbers'),
 ('jadfakhoury', 'situps');
 
-INSERT INTO Health_Statistics (username, weight, speed, lift) VALUES
-('jadfakhoury', 70, 10, 100),
-('jadfakhoury', 72, 11, 105),
-('jadfakhoury', 68, 9, 95),
-('jadfakhoury', 75, 12, 110),
-('jadfakhoury', 65, 8, 90);
+INSERT INTO Weight_Statistics (username, weight) VALUES
+('jadfakhoury', 70),
+('jadfakhoury', 72),
+('jadfakhoury', 68),
+('jadfakhoury', 75),
+('jadfakhoury', 65);
+
+INSERT INTO Speed_Statistics (username, speed) VALUES
+('jadfakhoury', 10),
+('jadfakhoury', 11),
+('jadfakhoury', 9),
+('jadfakhoury', 12),
+('jadfakhoury', 8);
+
+INSERT INTO Lift_Statistics (username, lift) VALUES
+('jadfakhoury', 100),
+('jadfakhoury', 105),
+('jadfakhoury', 95),
+('jadfakhoury', 110),
+('jadfakhoury', 90);
