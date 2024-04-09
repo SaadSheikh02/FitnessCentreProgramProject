@@ -1,0 +1,1 @@
+UPDATE Dates_Trainer_Available SET start_trainer_date = '2024-08-01' WHERE trainer_id = 'sonic' AND schedule_id = 1;

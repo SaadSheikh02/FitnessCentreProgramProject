@@ -13,9 +13,9 @@ public class Main {
 
     private static String HOST = "localhost";
     private static String PORT = "5432";
-    private static String DB_NAME = "FitnessApplication";
+    private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
-    private static String PASSWORD = "DarkSniper22";
+    private static String PASSWORD = "50551591";
 
     private static String username = null;
 
@@ -1319,7 +1319,7 @@ public class Main {
                 viewSchedule();
                 break;
             case 3:
-                //changeSchedule();
+                changeSchedule();
             case 4:
                 menuDecider();
                 break;
@@ -1480,6 +1480,89 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    private static void changeSchedule(){
+        int scheduleID = getScheduleID();
+
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Change Start Date");
+        System.out.println("2) Change End Date");
+        System.out.println("3) Change Start Time");
+        System.out.println("4) Change End Time");
+        System.out.println("5) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                changeStartDate(scheduleID);
+                break;
+            case 2:
+                changeEndDate();
+                break;
+            case 3:
+                changeStartTime();
+            case 4:
+                changeEndTime();
+                break;
+            case 5:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                changeSchedule();
+        }
+    }
+
+    private static void changeStartDate(int scheduleID){
+        String newStartDateString = getDate("new start date of schedule", true);
+
+        try{
+            String sql_statement = "UPDATE Dates_Trainer_Available SET start_trainer_date = ? WHERE trainer_id = ? AND schedule_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date newStartDate = dateFormat.parse(newStartDateString);
+            java.sql.Date newStartDateSQL = new java.sql.Date(newStartDate.getTime());
+
+            preparedStatement.setDate(1, newStartDateSQL);
+            preparedStatement.setString(2, username);
+            preparedStatement.setInt(3, scheduleID);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (ParseException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void changeEndDate(int scheduleID){
+        String newStartDateString = getDate("new start date of schedule", true);
+
+        try{
+            String sql_statement = "UPDATE Dates_Trainer_Available SET start_trainer_date = ? WHERE trainer_id = ? AND schedule_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date newStartDate = dateFormat.parse(newStartDateString);
+            java.sql.Date newStartDateSQL = new java.sql.Date(newStartDate.getTime());
+
+            preparedStatement.setDate(1, newStartDateSQL);
+            preparedStatement.setString(2, username);
+            preparedStatement.setInt(3, scheduleID);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (ParseException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
         return input.nextInt();
@@ -1513,5 +1596,10 @@ public class Main {
     private static String getExercise(){
         System.out.println("Enter exercise: ");
         return input.nextLine();
+    }
+
+    private static int getScheduleID(){
+        System.out.println("Enter Schedule ID for the schedule you'd like to change: ");
+        return input.nextInt();
     }
 }
