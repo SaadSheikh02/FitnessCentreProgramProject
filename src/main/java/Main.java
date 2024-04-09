@@ -1482,6 +1482,11 @@ public class Main {
     }
 
     private static void changeSchedule(){
+        if(!schedulesAvailableForTrainer()){
+            menuDecider();
+            return;
+        }
+
         int scheduleID = getScheduleID();
 
         System.out.println();
@@ -1501,12 +1506,12 @@ public class Main {
                 changeStartDate(scheduleID);
                 break;
             case 2:
-                changeEndDate();
+//                changeEndDate(scheduleID);
                 break;
             case 3:
-                changeStartTime();
+//                changeStartTime();
             case 4:
-                changeEndTime();
+//                changeEndTime();
                 break;
             case 5:
                 menuDecider();
@@ -1517,30 +1522,35 @@ public class Main {
         }
     }
 
-    private static void changeStartDate(int scheduleID){
-        String newStartDateString = getDate("new start date of schedule", true);
+    private static boolean schedulesAvailableForTrainer(){
+        try {
+            String viewScheduleQuery =
+                    "SELECT schedule_id, start_trainer_date, end_trainer_date, start_time_of_day, end_time_of_day " +
+                            "FROM Dates_Trainer_Available " +
+                            "WHERE trainer_id = ?";
 
-        try{
-            String sql_statement = "UPDATE Dates_Trainer_Available SET start_trainer_date = ? WHERE trainer_id = ? AND schedule_id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+            PreparedStatement viewScheduleStatement = connection.prepareStatement(viewScheduleQuery);
+            viewScheduleStatement.setString(1, username);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date newStartDate = dateFormat.parse(newStartDateString);
-            java.sql.Date newStartDateSQL = new java.sql.Date(newStartDate.getTime());
+            ResultSet scheduleResult = viewScheduleStatement.executeQuery();
 
-            preparedStatement.setDate(1, newStartDateSQL);
-            preparedStatement.setString(2, username);
-            preparedStatement.setInt(3, scheduleID);
+            if (!scheduleResult.isBeforeFirst()) {
+                System.out.println("No schedules found for the trainer.");
+                return false;
+            }
 
-            preparedStatement.executeUpdate();
-
-            preparedStatement.close();
-        } catch (ParseException | SQLException e) {
+            return  true;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void changeEndDate(int scheduleID){
+    private static void changeStartDate(int scheduleID){
+        if(!schedulesAvailableForTrainer()){
+            changeSchedule();
+            return;
+        }
+
         String newStartDateString = getDate("new start date of schedule", true);
 
         try{
