@@ -64,6 +64,7 @@ CREATE TABLE Classes (
 );
 
 CREATE TABLE Dates_Trainer_Available (
+	schedule_id SERIAL PRIMARY KEY,
 	trainer_id TEXT,
 	FOREIGN KEY(trainer_id) REFERENCES Profiles(username),
 	start_trainer_date DATE,

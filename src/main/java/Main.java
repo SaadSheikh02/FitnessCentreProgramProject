@@ -112,6 +112,7 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 mainMenuChoices();
+                return;
         }
     }
 
@@ -472,6 +473,7 @@ public class Main {
                         break;
                     default:
                         personalInformation();
+                        return;
                 }
             } else {
                 System.out.println("No data found for the given username.");
@@ -564,6 +566,7 @@ public class Main {
                         break;
                     default:
                         fitnessGoals();
+                        return;
                 }
             } else {
                 System.out.println("No data found for the given username.");
@@ -697,6 +700,7 @@ public class Main {
                         break;
                     default:
                         healthActions();
+                        return;
                 }
             }
             else {
@@ -735,6 +739,7 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 setHealthActions();
+
         }
     }
 
@@ -1116,6 +1121,7 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 personalTraining();
+                return;
         }
 
         try {
@@ -1192,6 +1198,7 @@ public class Main {
                     break;
                 default:
                     memberScheduleManagement();
+                    return;
             }
 
             availableTrainersResult.close();
@@ -1306,7 +1313,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                //addSchedule();
+                addSchedule();
                 break;
             case 2:
                 //viewSchedule();
@@ -1320,6 +1327,116 @@ public class Main {
                 System.out.println("Invalid choice. Try again");
                 trainerScheduleManagement();
         }
+    }
+
+    private static void addSchedule() {
+        String startingDate = getDate("starting date", true);
+        System.out.println("What time of day?");
+        System.out.println("1. Morning");
+        System.out.println("2. Afternoon");
+        System.out.println("3. Evening");
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        String startingTimeOfDay = "";
+        switch (choice) {
+            case 1:
+                startingTimeOfDay = "MORNING";
+                break;
+            case 2:
+                startingTimeOfDay = "AFTERNOON";
+                break;
+            case 3:
+                startingTimeOfDay = "EVENING";
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                addSchedule();
+                return;
+        }
+
+        String endingDate = getDate("ending date", true);
+        System.out.println("What time of day?");
+        System.out.println("1. Morning");
+        System.out.println("2. Afternoon");
+        System.out.println("3. Evening");
+        System.out.println("Enter the number of your choice: ");
+        choice = input.nextInt();
+        input.nextLine();
+
+        String endingTimeOfDay = "";
+        switch (choice) {
+            case 1:
+                endingTimeOfDay = "MORNING";
+                break;
+            case 2:
+                endingTimeOfDay = "AFTERNOON";
+                break;
+            case 3:
+                endingTimeOfDay = "EVENING";
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                addSchedule();
+                return;
+        }
+
+        try {
+            String checkConflictsQuery = "SELECT COUNT(*) AS count FROM Dates_Trainer_Available WHERE trainer_id = ? AND ((?::DATE >= start_trainer_date AND ?::DATE < end_trainer_date) OR (?::DATE > start_trainer_date AND ?::DATE <= end_trainer_date) OR (?::DATE <= start_trainer_date AND ?::DATE >= end_trainer_date))";
+            PreparedStatement checkConflictsStatement = connection.prepareStatement(checkConflictsQuery);
+            checkConflictsStatement.setString(1, username); // Assuming username is the trainer_id
+            checkConflictsStatement.setString(2, startingDate);
+            checkConflictsStatement.setString(3, startingDate);
+            checkConflictsStatement.setString(4, endingDate);
+            checkConflictsStatement.setString(5, endingDate);
+            checkConflictsStatement.setString(6, startingDate);
+            checkConflictsStatement.setString(7, endingDate);
+            ResultSet conflictsResult = checkConflictsStatement.executeQuery();
+            conflictsResult.next();
+            int conflictCount = conflictsResult.getInt("count");
+            conflictsResult.close();
+            checkConflictsStatement.close();
+
+            if (conflictCount > 0) {
+                System.out.println("Schedule conflicts with existing schedules. Please choose a different time.");
+                addSchedule();
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to check for schedule conflicts.");
+            return;
+        }
+
+        try {
+            String insertScheduleQuery = "INSERT INTO Dates_Trainer_Available (start_trainer_date, start_time_of_day, end_trainer_date, end_time_of_day, trainer_id) VALUES (?::DATE, ?, ?::DATE, ?, ?)";
+            PreparedStatement insertScheduleStatement = connection.prepareStatement(insertScheduleQuery);
+            insertScheduleStatement.setString(1, startingDate);
+            insertScheduleStatement.setString(2, startingTimeOfDay);
+            insertScheduleStatement.setString(3, endingDate);
+            insertScheduleStatement.setString(4, endingTimeOfDay);
+            insertScheduleStatement.setString(5, username);
+            insertScheduleStatement.executeUpdate();
+            System.out.println("Schedule added successfully.");
+            insertScheduleStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to add schedule. Please try again.");
+        }
+
+        System.out.println("Would you like to add another range of avaiability? (y/n)");
+        char another = input.next().charAt(0);
+        input.nextLine();
+        switch (another){
+            case 'y':
+                addSchedule();
+                break;
+            default:
+                trainerScheduleManagement();
+        }
+
     }
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
