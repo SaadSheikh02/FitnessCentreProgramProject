@@ -329,9 +329,8 @@ public class Main {
         System.out.println("Enter " + context + " (YYYY-MM-DD): ");
         String actual_date = "";
 
-        // Keep reading lines until a non-empty line is received
         while (actual_date.isEmpty()) {
-            actual_date = input.nextLine().trim();  // Trim to remove leading and trailing spaces
+            actual_date = input.nextLine().trim();
         }
 
         SimpleDateFormat expectedFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1506,7 +1505,7 @@ public class Main {
                 changeStartDate(scheduleID);
                 break;
             case 2:
-//                changeEndDate(scheduleID);
+                changeEndDate(scheduleID);
                 break;
             case 3:
 //                changeStartTime();
@@ -1555,6 +1554,34 @@ public class Main {
 
         try{
             String sql_statement = "UPDATE Dates_Trainer_Available SET start_trainer_date = ? WHERE trainer_id = ? AND schedule_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date newStartDate = dateFormat.parse(newStartDateString);
+            java.sql.Date newStartDateSQL = new java.sql.Date(newStartDate.getTime());
+
+            preparedStatement.setDate(1, newStartDateSQL);
+            preparedStatement.setString(2, username);
+            preparedStatement.setInt(3, scheduleID);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (ParseException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void changeEndDate(int scheduleID){
+        if(!schedulesAvailableForTrainer()){
+            changeSchedule();
+            return;
+        }
+
+        String newStartDateString = getDate("new end date of schedule", true);
+
+        try{
+            String sql_statement = "UPDATE Dates_Trainer_Available SET end_trainer_date = ? WHERE trainer_id = ? AND schedule_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

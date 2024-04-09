@@ -1,0 +1,1 @@
+UPDATE Dates_Trainer_Available SET end_trainer_date = '2025-05-31' WHERE trainer_id = 'sonic' AND schedule_id = 1;
