@@ -1316,7 +1316,7 @@ public class Main {
                 addSchedule();
                 break;
             case 2:
-                //viewSchedule();
+                viewSchedule();
                 break;
             case 3:
                 //changeSchedule();
@@ -1436,7 +1436,49 @@ public class Main {
             default:
                 trainerScheduleManagement();
         }
+    }
 
+    private static void viewSchedule() {
+        try {
+            String viewScheduleQuery =
+                "SELECT schedule_id, start_trainer_date, end_trainer_date, start_time_of_day, end_time_of_day " +
+                "FROM Dates_Trainer_Available " +
+                "WHERE trainer_id = ?";
+
+            PreparedStatement viewScheduleStatement = connection.prepareStatement(viewScheduleQuery);
+            viewScheduleStatement.setString(1, username);
+
+            ResultSet scheduleResult = viewScheduleStatement.executeQuery();
+
+            if (!scheduleResult.isBeforeFirst()) {
+                System.out.println("No schedules found for the trainer.");
+                trainerScheduleManagement();
+                return;
+            }
+
+            System.out.println("Trainer's Schedules:");
+            System.out.println("----------------------------------------------------");
+            System.out.printf("| %-10s | %-15s | %-15s | %-15s | %-15s |\n", "Schedule ID", "Start Date", "Start Time", "End Date", "End Time");
+            System.out.println("----------------------------------------------------");
+            while (scheduleResult.next()) {
+                int scheduleId = scheduleResult.getInt("schedule_id");
+                String startDate = scheduleResult.getString("start_trainer_date");
+                String startTime = scheduleResult.getString("start_time_of_day");
+                String endDate = scheduleResult.getString("end_trainer_date");
+                String endTime = scheduleResult.getString("end_time_of_day");
+
+                System.out.printf("| %-10d | %-15s | %-15s | %-15s | %-15s |\n", scheduleId, startDate, startTime, endDate, endTime);
+            }
+            System.out.println("----------------------------------------------------");
+
+            scheduleResult.close();
+            viewScheduleStatement.close();
+
+            trainerScheduleManagement();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
