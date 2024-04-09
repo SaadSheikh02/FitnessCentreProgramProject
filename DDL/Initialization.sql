@@ -87,6 +87,9 @@ CREATE TABLE Class_Members (
 	FOREIGN KEY(username) REFERENCES Profiles(username)
 );
 
+ALTER TABLE Class_Members
+ADD CONSTRAINT unique_class_user_constraint UNIQUE (class_id, username);
+
 CREATE TABLE Bookings (
 	room_id INT,
 	class_date DATE,

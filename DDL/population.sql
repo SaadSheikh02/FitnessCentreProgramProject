@@ -16,7 +16,7 @@ VALUES ('sonic', '2024-05-01', 'MORNING', '2024-05-31', 'EVENING');
 
 INSERT INTO
 Classes (class_id, trainer_id, room_id, class_type, class_description, class_date, time_of_day)
-VALUES (1, 'sonic', 1, 'PERSONAL', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
+VALUES (1, 'sonic', 1, 'GROUP_TYPE', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
 
 INSERT INTO
 Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day)

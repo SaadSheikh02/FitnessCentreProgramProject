@@ -12,10 +12,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
-    private static String DB_NAME = "FitnessApplication";
+    private static String PORT = "1433";
+    private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
-    private static String PASSWORD = "DarkSniper22";
+    private static String PASSWORD = "50551591";
 
     private static String username = null;
 
@@ -115,7 +115,7 @@ public class Main {
         }
     }
 
-    private static void memberMenuChoices() {
+    private static void memberMenuChoices() throws SQLException {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Profile Information");
@@ -1064,7 +1064,7 @@ public class Main {
         }
     }
 
-    private static void memberScheduleManagement() {
+    private static void memberScheduleManagement() throws SQLException {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Book a personal session");
@@ -1080,7 +1080,7 @@ public class Main {
                 personalTraining();
                 break;
             case 2:
-                //groupTraining();
+                groupTraining();
                 break;
             case 3:
                 menuDecider();
@@ -1197,6 +1197,90 @@ public class Main {
             insertBillStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void groupTraining() throws SQLException {
+        String sql_classes = "SELECT Classes.*\n" +
+                "FROM Classes\n" +
+                "LEFT JOIN Class_Members ON Classes.class_id = Class_Members.class_id AND Class_Members.username = ?\n" +
+                "WHERE Classes.class_type = 'GROUP_TYPE'\n" +
+                "AND Class_Members.class_id IS NULL;\n";
+        PreparedStatement preparedStatementClasses = connection.prepareStatement(sql_classes);
+        preparedStatementClasses.setString(1, username);
+        ResultSet resultSetClasses = preparedStatementClasses.executeQuery();
+
+        boolean classesAvailable = false;
+
+        while(resultSetClasses.next()){
+            classesAvailable = true;
+            System.out.println("Class ID: " + resultSetClasses.getInt("class_id"));
+            System.out.println("Trainer ID: " + resultSetClasses.getString("trainer_id"));
+            System.out.println("Room ID: " + resultSetClasses.getString("room_id"));
+            System.out.println("Class Type: " + resultSetClasses.getString("class_type"));
+            System.out.println("Class Description: " + resultSetClasses.getString("class_description"));
+            System.out.println("Class Date: " + resultSetClasses.getDate("class_date"));
+            System.out.println("Time of Day: " + resultSetClasses.getString("time_of_day"));
+        }
+
+        resultSetClasses.close();
+        preparedStatementClasses.close();
+
+        if(classesAvailable){
+            System.out.println("Enter Class ID of the class you wish to participate in: ");
+            int classID = input.nextInt();
+
+            // Bill Generation
+            String sql_bill_insertion = "INSERT INTO Bills (username, price, date_issued)\n" +
+                    "VALUES (?, ?, ?);";
+
+            Date currDate = new Date();
+            java.sql.Date sqlCurrDate = new java.sql.Date(currDate.getTime());
+            PreparedStatement preparedStatementBills = connection.prepareStatement(sql_bill_insertion);
+            preparedStatementBills.setString(1, username);
+            preparedStatementBills.setInt(2, 50);
+            preparedStatementBills.setDate(3, sqlCurrDate);
+
+            preparedStatementBills.close();
+
+            // Member enrolment
+            try{
+                String sql_class_member = "INSERT INTO Class_Members (class_id, username)\n" +
+                        "VALUES (?, ?);";
+                PreparedStatement preparedStatementClassMembers = connection.prepareStatement(sql_class_member);
+                preparedStatementClassMembers.setInt(1, classID);
+                preparedStatementClassMembers.setString(2, username);
+
+                preparedStatementClassMembers.executeUpdate();
+
+                preparedStatementClassMembers.close();
+            }
+            catch (SQLException e){
+                if(e.getSQLState().startsWith("23")){
+                    System.out.println("You are already enrolled in this class");
+                }
+                else{
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println("Would you like to enrol in another class? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+            switch (choice){
+                case 'y':
+                    groupTraining();
+                    break;
+                case 'n':
+                    memberScheduleManagement();
+                    break;
+                default:
+                    groupTraining();
+            }
+        }
+        else{
+            System.out.println("No more classes available for you to enrol in");
+            memberScheduleManagement();
         }
     }
 
