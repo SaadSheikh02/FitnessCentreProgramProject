@@ -155,6 +155,7 @@ public class Main {
 
         switch (choice) {
             case 1:
+                trainerScheduleManagement();
                 break;
             case 2:
                 break;
@@ -1291,6 +1292,35 @@ public class Main {
         }
     }
 
+    private static void trainerScheduleManagement() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Add available time");
+        System.out.println("2) View available time");
+        System.out.println("3) change available time");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                //addSchedule();
+                break;
+            case 2:
+                //viewSchedule();
+                break;
+            case 3:
+                //changeSchedule();
+            case 4:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                trainerScheduleManagement();
+        }
+    }
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
         return input.nextInt();
