@@ -12,10 +12,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String PORT = "5432";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
+    private static String PASSWORD = "DarkSniper22";
 
     private static String username = null;
 
@@ -1127,10 +1127,12 @@ public class Main {
                     "    FROM Dates_Trainer_Unavailable u " +
                     "    WHERE u.trainer_id = d.trainer_id " +
                     "    AND u.trainer_date = CAST(? AS DATE)" +
+                    "    AND u.time_of_day = ?" +
                     ")";
             PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
             availableTrainersStatement.setString(1, date);
             availableTrainersStatement.setString(2, date);
+            availableTrainersStatement.setString(3, timeOfDay);
             ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
 
             List<String> availableTrainers = new ArrayList<>();
@@ -1227,8 +1229,13 @@ public class Main {
         preparedStatementClasses.close();
 
         if(classesAvailable){
-            System.out.println("Enter Class ID of the class you wish to participate in: ");
+            System.out.println("Enter Class ID of the class you wish to participate in: (or '0' to cancel)");
             int classID = input.nextInt();
+
+            if (classID == 0){
+                memberScheduleManagement();
+                return;
+            }
 
             // Bill Generation
             String sql_bill_insertion = "INSERT INTO Bills (username, price, date_issued)\n" +
