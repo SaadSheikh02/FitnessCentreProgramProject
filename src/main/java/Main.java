@@ -1129,17 +1129,17 @@ public class Main {
             String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
                     "FROM Dates_Trainer_Available d " +
                     "JOIN Profiles p ON d.trainer_id = p.username " +
-                    "WHERE CAST(? AS DATE) BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "WHERE ? BETWEEN d.start_trainer_date AND d.end_trainer_date " +
                     "AND NOT EXISTS (" +
                     "    SELECT 1 " +
                     "    FROM Dates_Trainer_Unavailable u " +
                     "    WHERE u.trainer_id = d.trainer_id " +
-                    "    AND u.trainer_date = CAST(? AS DATE)" +
+                    "    AND u.trainer_date = ?" +
                     "    AND u.time_of_day = ?" +
                     ")";
             PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
-            availableTrainersStatement.setString(1, date);
-            availableTrainersStatement.setString(2, date);
+            availableTrainersStatement.setDate(1, java.sql.Date.valueOf(date));
+            availableTrainersStatement.setDate(2, java.sql.Date.valueOf(date));
             availableTrainersStatement.setString(3, timeOfDay);
             ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
 
@@ -1183,7 +1183,7 @@ public class Main {
             insertClassStatement.setString(4, timeOfDay);
             insertClassStatement.executeUpdate();
 
-            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, ?, ?)";
             PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
             insertUnavailableStatement.setString(1, selectedTrainer);
             insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date)); // Convert string to java.sql.Date
@@ -1812,7 +1812,7 @@ public class Main {
                 bookClass();
                 break;
             case 3:
-                //cancelClass();
+                cancelClass();
                 break;
             case 4:
                 menuDecider();
@@ -1913,17 +1913,17 @@ public class Main {
             String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
                     "FROM Dates_Trainer_Available d " +
                     "JOIN Profiles p ON d.trainer_id = p.username " +
-                    "WHERE CAST(? AS DATE) BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "WHERE ? BETWEEN d.start_trainer_date AND d.end_trainer_date " +
                     "AND NOT EXISTS (" +
                     "    SELECT 1 " +
                     "    FROM Dates_Trainer_Unavailable u " +
                     "    WHERE u.trainer_id = d.trainer_id " +
-                    "    AND u.trainer_date = CAST(? AS DATE)" +
+                    "    AND u.trainer_date = ?" +
                     "    AND u.time_of_day = ?" +
                     ")";
             PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
-            availableTrainersStatement.setString(1, date);
-            availableTrainersStatement.setString(2, date);
+            availableTrainersStatement.setDate(1, java.sql.Date.valueOf(date));
+            availableTrainersStatement.setDate(2, java.sql.Date.valueOf(date));
             availableTrainersStatement.setString(3, timeOfDay);
             ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
 
@@ -1970,7 +1970,7 @@ public class Main {
             insertClassStatement.setString(6, timeOfDay);
             insertClassStatement.executeUpdate();
 
-            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, ?, ?)";
             PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
             insertUnavailableStatement.setString(1, selectedTrainer);
             insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date));
@@ -1997,6 +1997,10 @@ public class Main {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void cancelClass(){
+
     }
 
 }
