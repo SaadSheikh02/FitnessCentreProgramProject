@@ -189,6 +189,7 @@ public class Main {
                 manageEquipment();
                 break;
             case 3:
+                manageClassSchedule();
                 break;
             case 4:
                 break;
@@ -1782,4 +1783,34 @@ public class Main {
         }
     }
 
+    private static void manageClassSchedule(){
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) view class schedule");
+        System.out.println("2) book a new class");
+        System.out.println("3) cancel a class");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                //viewClassSchedule();
+                break;
+            case 2:
+                //bookClass();
+                break;
+            case 3:
+                //cancelClass();
+                break;
+            case 4:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                manageClassSchedule();
+        }
+    }
 }
