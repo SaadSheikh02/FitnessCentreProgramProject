@@ -192,6 +192,7 @@ public class Main {
                 manageClassSchedule();
                 break;
             case 4:
+                viewBills();
                 break;
             case 5:
                 userLogout();
@@ -371,32 +372,6 @@ public class Main {
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
                 System.out.println();
-                /*
-                * while (resultSet.next()){
-                    System.out.print("\n" + resultSet.getString("username") + "\t");
-                    System.out.print(resultSet.getInt("credit_card") + "\t");
-                    System.out.print(resultSet.getDate("birthday") + "\t");
-                    System.out.print(resultSet.getInt("height") + "\t");
-                    System.out.print(resultSet.getInt("weight") + "\t");
-                    System.out.print(resultSet.getString("diet_plan") + "\t");
-                    System.out.print(resultSet.getInt("goal_weight") + "\t");
-                    System.out.print(resultSet.getInt("goal_speed") + "\t");
-                    System.out.print(resultSet.getInt("goal_lift") + "\t");
-                    System.out.print(resultSet.getDate("weight_deadline") + "\t");
-                    System.out.print(resultSet.getDate("speed_deadline") + "\t");
-                    System.out.print(resultSet.getDate("lift_deadline") + "\t");
-                    System.out.print(resultSet.getInt("weight_loss") + "\t");
-                    System.out.print(resultSet.getInt("max_speed") + "\t");
-                    System.out.print(resultSet.getInt("max_lift") + "\t");
-                    System.out.print(resultSet.getInt("bmi") + "\t");
-                    System.out.print(resultSet.getInt("systolic_bp") + "\t");
-                    System.out.print(resultSet.getInt("diastolic_bp") + "\t");
-                    System.out.print(resultSet.getInt("heart_rate") + "\t");
-                    System.out.print(resultSet.getInt("cholestrol_level") + "\t");
-                    System.out.print(resultSet.getInt("bloodsugar_level") + "\t");
-                }
-                * */
-
                 return true;
             }
         } catch (SQLException e) {
@@ -1861,7 +1836,6 @@ public class Main {
         }
     }
 
-    // nvm, Bugged still
     private static void bookClass() {
         try {
             System.out.println("Enter the Room ID:");
@@ -2040,6 +2014,39 @@ public class Main {
             classResult.close();
             checkClassStatement.close();
             deleteClassStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void viewBills() {
+        try {
+            String viewBillsQuery = "SELECT * FROM Bills";
+            PreparedStatement viewBillsStatement = connection.prepareStatement(viewBillsQuery);
+            ResultSet billsResult = viewBillsStatement.executeQuery();
+
+            System.out.println("Bills:");
+            System.out.println("------------------------------------------------------");
+            System.out.printf("| %-8s | %-15s | %-6s | %-12s |\n",
+                    "Bill ID", "Username", "Price", "Date Issued");
+            System.out.println("------------------------------------------------------");
+
+            while (billsResult.next()) {
+                int billId = billsResult.getInt("bill_id");
+                String username = billsResult.getString("username");
+                int price = billsResult.getInt("price");
+                Date dateIssued = billsResult.getDate("date_issued");
+
+                System.out.printf("| %-8d | %-15s | $%-5d | %-12s |\n",
+                        billId, username, price, dateIssued);
+            }
+
+            System.out.println("------------------------------------------------------");
+
+            billsResult.close();
+            viewBillsStatement.close();
+
+            menuDecider();
         } catch (SQLException e) {
             e.printStackTrace();
         }
