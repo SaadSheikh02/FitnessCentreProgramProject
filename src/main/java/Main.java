@@ -2001,7 +2001,48 @@ public class Main {
     }
 
     private static void cancelClass(){
+        try {
+            System.out.println("Enter the class_id of the class you want to cancel:");
+            int classId = input.nextInt();
+            input.nextLine();
 
+            String checkClassQuery = "SELECT * FROM Classes WHERE class_id = ?";
+            PreparedStatement checkClassStatement = connection.prepareStatement(checkClassQuery);
+            checkClassStatement.setInt(1, classId);
+            ResultSet classResult = checkClassStatement.executeQuery();
+
+            if (!classResult.next()) {
+                System.out.println("Class with class_id " + classId + " not found.");
+                manageClassSchedule();
+            }
+
+            String deleteClassQuery = "DELETE FROM Classes WHERE class_id = ?";
+            PreparedStatement deleteClassStatement = connection.prepareStatement(deleteClassQuery);
+            deleteClassStatement.setInt(1, classId);
+            int rowsAffected = deleteClassStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Class with class_id " + classId + " has been canceled.");
+            } else {
+                System.out.println("Failed to cancel class with class_id " + classId);
+            }
+
+            System.out.println("Do you want to delete another class? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+
+            if (choice == 'y' || choice == 'Y') {
+                cancelClass();
+            } else {
+                manageClassSchedule();
+            }
+
+            classResult.close();
+            checkClassStatement.close();
+            deleteClassStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
