@@ -1797,7 +1797,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                //viewClassSchedule();
+                viewClassSchedule();
                 break;
             case 2:
                 //bookClass();
@@ -1811,6 +1811,43 @@ public class Main {
             default:
                 System.out.println("Invalid choice. Try again");
                 manageClassSchedule();
+        }
+    }
+
+    private static void viewClassSchedule(){
+        try {
+            String viewClassScheduleQuery =
+                    "SELECT class_id, room_id, class_description, class_date, time_of_day " +
+                    "FROM Classes";
+
+            PreparedStatement viewClassScheduleStatement = connection.prepareStatement(viewClassScheduleQuery);
+            ResultSet classScheduleResult = viewClassScheduleStatement.executeQuery();
+
+            System.out.println("Class Schedule:");
+            System.out.println("----------------------------------------------------------------------------");
+            System.out.printf("| %-10s | %-10s | %-20s | %-15s | %-10s |\n",
+                    "Class ID", "Room ID", "Class Description", "Date", "Time of Day");
+            System.out.println("----------------------------------------------------------------------------");
+
+            while (classScheduleResult.next()) {
+                int classId = classScheduleResult.getInt("class_id");
+                int roomId = classScheduleResult.getInt("room_id");
+                String classDescription = classScheduleResult.getString("class_description");
+                String classDate = classScheduleResult.getString("class_date");
+                String timeOfDay = classScheduleResult.getString("time_of_day");
+
+                System.out.printf("| %-10d | %-10d | %-20s | %-15s | %-10s |\n",
+                        classId, roomId, classDescription, classDate, timeOfDay);
+            }
+
+            System.out.println("----------------------------------------------------------------------------");
+
+            classScheduleResult.close();
+            viewClassScheduleStatement.close();
+
+            manageClassSchedule();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
