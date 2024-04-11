@@ -1657,7 +1657,7 @@ public class Main {
                 viewEquipments();
                 break;
             case 2:
-                //updateEquipmentStatus();
+                updateEquipmentStatus();
                 break;
             case 3:
                 menuDecider();
@@ -1704,5 +1704,82 @@ public class Main {
         }
     }
 
-    
+    private static void updateEquipmentStatus() {
+        try {
+            System.out.println("Enter the Equipment ID of the equipment you want to update:");
+            int equipmentId = input.nextInt();
+            input.nextLine();
+
+            String checkEquipmentQuery = "SELECT * FROM Equipment WHERE equipment_id = ?";
+            PreparedStatement checkEquipmentStatement = connection.prepareStatement(checkEquipmentQuery);
+            checkEquipmentStatement.setInt(1, equipmentId);
+            ResultSet equipmentResult = checkEquipmentStatement.executeQuery();
+
+            if (!equipmentResult.isBeforeFirst()) {
+                System.out.println("Equipment not found.");
+                updateEquipmentStatus();
+            }
+
+            System.out.println();
+            System.out.println("Options: ");
+            System.out.println("1) Good");
+            System.out.println("2) Requires Maintenance");
+            System.out.println("3) Broken");
+            System.out.println("4) Removed");
+            System.out.println("5) Go Back");
+            System.out.println();
+            System.out.println("Enter new status: ");
+            String newStatus = "";
+            int choice = input.nextInt();
+            input.nextLine();
+
+            switch (choice) {
+                case 1:
+                    newStatus = "GOOD";
+                    break;
+                case 2:
+                    newStatus = "REQUIRES MAINTENANCE";
+                    break;
+                case 3:
+                    newStatus = "BROKEN";
+                    break;
+                case 4:
+                    newStatus = "REMOVED";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    updateEquipmentStatus();
+            }
+
+            if (newStatus == "REMOVED"){
+                String deleteEquipmentQuery = "DELETE FROM Equipment WHERE equipment_id = ?";
+                PreparedStatement deleteEquipmentStatement = connection.prepareStatement(deleteEquipmentQuery);
+                deleteEquipmentStatement.setInt(1, equipmentId);
+                deleteEquipmentStatement.executeUpdate();
+                deleteEquipmentStatement.close();
+            }
+            else {
+                String updateEquipmentQuery = "UPDATE Equipment SET equipment_status = ? WHERE equipment_id = ?";
+                PreparedStatement updateEquipmentStatement = connection.prepareStatement(updateEquipmentQuery);
+                updateEquipmentStatement.setString(1, newStatus);
+                updateEquipmentStatement.setInt(2, equipmentId);
+                int rowsAffected = updateEquipmentStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Equipment status updated successfully.");
+                } else {
+                    System.out.println("Failed to update equipment status.");
+                }
+
+                equipmentResult.close();
+                checkEquipmentStatement.close();
+                updateEquipmentStatement.close();
+            }
+
+            manageEquipment();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
