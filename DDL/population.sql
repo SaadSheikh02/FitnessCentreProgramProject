@@ -19,8 +19,17 @@ Classes (class_id, trainer_id, room_id, class_type, class_description, class_dat
 VALUES (1, 'sonic', 1, 'GROUP_TYPE', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
 
 INSERT INTO
-Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day)
-VALUES ('sonic', '2024-05-15', 'AFTERNOON');
+Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES 
+('sonic', '2024-05-15', 'AFTERNOON'),
+('shadow', '2024-05-01', 'EVENING');
+
+INSERT INTO Bookings (room_id, class_date, time_of_day, event_info) 
+VALUES (1, '2024-05-01', 'EVENING', 'cardio');
+
+INSERT INTO Equipment (room_id, equipment_status) VALUES
+(1, 'GOOD'),
+(1, 'REQUIRES MAINTENANCE');
+(1, 'BROKEN');
 
 INSERT INTO 
 Profiles (username, passwords, first_name, last_name, user_type) 
