@@ -12,7 +12,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
+    private static String PORT = "1433";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
@@ -1508,7 +1508,7 @@ public class Main {
                 changeEndDate(scheduleID);
                 break;
             case 3:
-//                changeStartTime();
+                changeStartTime(scheduleID);
             case 4:
 //                changeEndTime();
                 break;
@@ -1596,6 +1596,59 @@ public class Main {
 
             preparedStatement.close();
         } catch (ParseException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void changeStartTime(int scheduleID) {
+        if (!schedulesAvailableForTrainer()) {
+            changeSchedule();
+            return;
+        }
+
+        String time_option = null;
+
+        System.out.println();
+        System.out.println("Time Options: ");
+        System.out.println("1) Morning");
+        System.out.println("2) Afternoon");
+        System.out.println("3) Evening");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                time_option = "MORNING";
+                break;
+            case 2:
+                time_option = "AFTERNOON";
+                break;
+            case 3:
+                time_option = "EVENING";
+                break;
+            case 4:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                changeSchedule();
+        }
+
+        try{
+            String sql_statement = "UPDATE Dates_Trainer_Available SET start_time_of_day = ? WHERE trainer_id = ? AND schedule_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql_statement);
+
+            preparedStatement.setString(1, time_option);
+            preparedStatement.setString(2, username);
+            preparedStatement.setInt(3, scheduleID);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
