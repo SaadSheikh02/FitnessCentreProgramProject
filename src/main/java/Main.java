@@ -1174,6 +1174,15 @@ public class Main {
                 return;
             }
             String selectedTrainer = availableIDs.get(trainerChoice - 1);
+
+            String insertClassQuery = "INSERT INTO Classes (trainer_id, class_type, class_date, time_of_day) VALUES (?, ?, ?, ?)";
+            PreparedStatement insertClassStatement = connection.prepareStatement(insertClassQuery, Statement.RETURN_GENERATED_KEYS);
+            insertClassStatement.setString(1, selectedTrainer);
+            insertClassStatement.setString(2, "INDIVIDUAL_TYPE");
+            insertClassStatement.setDate(3, java.sql.Date.valueOf(date));
+            insertClassStatement.setString(4, timeOfDay);
+            insertClassStatement.executeUpdate();
+
             String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
             PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
             insertUnavailableStatement.setString(1, selectedTrainer);
