@@ -1800,7 +1800,7 @@ public class Main {
                 viewClassSchedule();
                 break;
             case 2:
-                //bookClass();
+                bookClass();
                 break;
             case 3:
                 //cancelClass();
@@ -1818,7 +1818,8 @@ public class Main {
         try {
             String viewClassScheduleQuery =
                     "SELECT class_id, room_id, class_description, class_date, time_of_day " +
-                    "FROM Classes";
+                    "FROM Classes " +
+                    "WHERE class_type = 'GROUP_TYPE';";
 
             PreparedStatement viewClassScheduleStatement = connection.prepareStatement(viewClassScheduleQuery);
             ResultSet classScheduleResult = viewClassScheduleStatement.executeQuery();
@@ -1850,4 +1851,143 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+    private static void bookClass() {
+        try {
+            System.out.println("Enter the Room ID:");
+            int roomId = input.nextInt();
+            input.nextLine();
+
+            System.out.println("Enter the Class Description:");
+            String classDescription = input.nextLine();
+
+            String date = getDate("class date", true);
+
+            System.out.println("What time of day?");
+            System.out.println("1. Morning");
+            System.out.println("2. Afternoon");
+            System.out.println("3. Evening");
+            System.out.println("Enter the number of your choice: ");
+            int timechoice = input.nextInt();
+            input.nextLine();
+
+            String timeOfDay = "";
+            switch (timechoice) {
+                case 1:
+                    timeOfDay = "MORNING";
+                    break;
+                case 2:
+                    timeOfDay = "AFTERNOON";
+                    break;
+                case 3:
+                    timeOfDay = "EVENING";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    bookClass();
+                    return;
+            }
+
+            String checkRoomAvailabilityQuery = "SELECT * FROM Classes WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+            PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
+            checkRoomAvailabilityStatement.setInt(1, roomId);
+            checkRoomAvailabilityStatement.setDate(2, java.sql.Date.valueOf(date));
+            checkRoomAvailabilityStatement.setString(3, timeOfDay);
+            ResultSet roomAvailabilityResult = checkRoomAvailabilityStatement.executeQuery();
+
+            if (roomAvailabilityResult.next()) {
+                System.out.println("Error: Room not available for that time of day on that date.");
+                bookClass();
+                return;
+            }
+
+            String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
+                    "FROM Dates_Trainer_Available d " +
+                    "JOIN Profiles p ON d.trainer_id = p.username " +
+                    "WHERE CAST(? AS DATE) BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "AND NOT EXISTS (" +
+                    "    SELECT 1 " +
+                    "    FROM Dates_Trainer_Unavailable u " +
+                    "    WHERE u.trainer_id = d.trainer_id " +
+                    "    AND u.trainer_date = CAST(? AS DATE)" +
+                    "    AND u.time_of_day = ?" +
+                    ")";
+            PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
+            availableTrainersStatement.setString(1, date);
+            availableTrainersStatement.setString(2, date);
+            availableTrainersStatement.setString(3, timeOfDay);
+            ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
+
+            List<String> availableTrainers = new ArrayList<>();
+            List<String> availableIDs = new ArrayList<>();
+            while (availableTrainersResult.next()) {
+                String firstName = availableTrainersResult.getString("first_name");
+                String lastName = availableTrainersResult.getString("last_name");
+                String ID = availableTrainersResult.getString("username");
+                availableTrainers.add(firstName + " " + lastName);
+                availableIDs.add(ID);
+            }
+
+            System.out.println("Available Trainers:");
+            for (int i = 0; i < availableTrainers.size(); i++) {
+                System.out.println((i + 1) + ". " + availableTrainers.get(i));
+            }
+
+            if (availableTrainers.isEmpty()){
+                System.out.println("There are no available trainers during that time.");
+                manageClassSchedule();
+                return;
+            }
+
+            System.out.println("Enter the number corresponding to the trainer you want to select:");
+            int trainerChoice = input.nextInt();
+            input.nextLine();
+
+            if (trainerChoice < 1 || trainerChoice > availableTrainers.size()) {
+                System.out.println("Invalid choice. Try again.");
+                bookClass();
+                return;
+            }
+
+            String selectedTrainer = availableIDs.get(trainerChoice - 1);
+
+            String insertClassQuery = "INSERT INTO Classes (trainer_id, room_id, class_type, class_description, class_date, time_of_day) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement insertClassStatement = connection.prepareStatement(insertClassQuery, Statement.RETURN_GENERATED_KEYS);
+            insertClassStatement.setString(1, selectedTrainer);
+            insertClassStatement.setInt(2, roomId);
+            insertClassStatement.setString(3, "GROUP_TYPE");
+            insertClassStatement.setString(4, classDescription);
+            insertClassStatement.setDate(5, java.sql.Date.valueOf(date));
+            insertClassStatement.setString(6, timeOfDay);
+            insertClassStatement.executeUpdate();
+
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
+            PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
+            insertUnavailableStatement.setString(1, selectedTrainer);
+            insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date));
+            insertUnavailableStatement.setString(3, timeOfDay);
+            insertUnavailableStatement.executeUpdate();
+
+
+            System.out.println("Do you want to schedule another class? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+
+            if (choice == 'y' || choice == 'Y') {
+                bookClass();
+            } else {
+                manageClassSchedule();
+            }
+
+            roomAvailabilityResult.close();
+            checkRoomAvailabilityStatement.close();
+            availableTrainersResult.close();
+            availableTrainersStatement.close();
+            insertUnavailableStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -20,15 +20,14 @@ VALUES (1, 'sonic', 1, 'GROUP_TYPE', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
 
 INSERT INTO
 Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES 
-('sonic', '2024-05-15', 'AFTERNOON'),
-('shadow', '2024-05-01', 'EVENING');
+('sonic', '2024-05-15', 'AFTERNOON');
 
 INSERT INTO Bookings (room_id, class_date, time_of_day, event_info) 
-VALUES (1, '2024-05-01', 'EVENING', 'cardio');
+VALUES (1, '2024-05-15', 'AFTERNOON', 'Kinesthetics');
 
 INSERT INTO Equipment (room_id, equipment_status) VALUES
 (1, 'GOOD'),
-(1, 'REQUIRES MAINTENANCE');
+(1, 'REQUIRES MAINTENANCE'),
 (1, 'BROKEN');
 
 INSERT INTO 
