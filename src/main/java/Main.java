@@ -1654,7 +1654,7 @@ public class Main {
 
         switch (choice) {
             case 1:
-                //viewEquipments();
+                viewEquipments();
                 break;
             case 2:
                 //updateEquipmentStatus();
@@ -1667,4 +1667,42 @@ public class Main {
                 manageEquipment();
         }
     }
+
+    private static void viewEquipments() {
+        try {
+            String viewEquipmentsQuery = "SELECT * FROM Equipment;";
+
+            PreparedStatement viewEquipmentsStatement = connection.prepareStatement(viewEquipmentsQuery);
+            ResultSet equipmentsResult = viewEquipmentsStatement.executeQuery();
+
+            if (!equipmentsResult.isBeforeFirst()) {
+                System.out.println("No equipments found.");
+                manageEquipment();
+                return;
+            }
+
+            System.out.println("Equipments:");
+            System.out.println("----------------------------------------");
+            System.out.printf("| %-12s | %-5s | %-20s |\n", "Equipment ID", "Room", "Status");
+            System.out.println("----------------------------------------");
+            while (equipmentsResult.next()) {
+                int equipmentID = equipmentsResult.getInt("equipment_id");
+                String roomID = equipmentsResult.getString("room_id");
+                String status = equipmentsResult.getString("equipment_status");
+
+                System.out.printf("| %-12d | %-5s | %-20s |\n", equipmentID, roomID, status);
+            }
+            System.out.println("----------------------------------------");
+
+            equipmentsResult.close();
+            viewEquipmentsStatement.close();
+
+            manageEquipment();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
 }
