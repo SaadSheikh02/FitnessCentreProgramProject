@@ -13,9 +13,9 @@ public class Main {
 
     private static String HOST = "localhost";
     private static String PORT = "5432";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
+    private static String PASSWORD = "DarkSniper22";
 
     private static String username = null;
 
@@ -186,6 +186,7 @@ public class Main {
             case 1:
                 break;
             case 2:
+                manageEquipment();
                 break;
             case 3:
                 break;
@@ -1638,5 +1639,32 @@ public class Main {
     private static int getScheduleID(){
         System.out.println("Enter Schedule ID for the schedule you'd like to change: ");
         return input.nextInt();
+    }
+
+    private static void manageEquipment() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) View equipment");
+        System.out.println("2) Update equipment");
+        System.out.println("3) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                //viewEquipments();
+                break;
+            case 2:
+                //updateEquipmentStatus();
+                break;
+            case 3:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                manageEquipment();
+        }
     }
 }
