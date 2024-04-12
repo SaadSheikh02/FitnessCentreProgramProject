@@ -2181,7 +2181,7 @@ public class Main {
                     bookClass();
                     return;
             }
-
+            
             String checkRoomAvailabilityQuery = "SELECT * FROM Classes WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
             PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
             checkRoomAvailabilityStatement.setInt(1, roomId);
