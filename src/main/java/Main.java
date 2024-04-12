@@ -159,6 +159,7 @@ public class Main {
                 trainerScheduleManagement();
                 break;
             case 2:
+                viewMemberProfile();
                 break;
             case 3:
                 userLogout();
@@ -1703,6 +1704,40 @@ public class Main {
             preparedStatement.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void viewMemberProfile(){
+        String username = getUsername();
+        getMemberInformation(username);
+        trainerMenuChoices();
+    }
+
+    private static void getMemberInformation(String memberUsername) {
+        try {
+            String sql = "SELECT p.first_name, p.last_name, m.credit_card, m.birthday, m.height, m.weight FROM Profiles p JOIN Members m ON p.username = m.username WHERE p.username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, memberUsername);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Move cursor to the first row
+            if (resultSet.next()) {
+                String name = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+                System.out.println("Name: " + name);
+                System.out.println("Credit Card: " + resultSet.getInt("credit_card"));
+                System.out.println("Birthday: " + resultSet.getDate("birthday"));
+                System.out.println("Height: " + resultSet.getFloat("height"));
+                System.out.println("Weight: " + resultSet.getFloat("weight"));
+                System.out.println();
+            } else {
+                System.out.println("No data found for the given username.");
+                profileInformation();
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
