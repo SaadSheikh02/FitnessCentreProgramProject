@@ -13,9 +13,9 @@ public class Main {
 
     private static String HOST = "localhost";
     private static String PORT = "5432";
-    private static String DB_NAME = "comp3005_project_2";
+    private static String DB_NAME = "FitnessApplication";
     private static String USER = "postgres";
-    private static String PASSWORD = "50551591";
+    private static String PASSWORD = "DarkSniper22";
 
     private static String username = null;
 
@@ -184,12 +184,16 @@ public class Main {
 
         switch (choice) {
             case 1:
+                roomBookingManagement();
                 break;
             case 2:
+                manageEquipment();
                 break;
             case 3:
+                manageClassSchedule();
                 break;
             case 4:
+                viewBills();
                 break;
             case 5:
                 userLogout();
@@ -2177,7 +2181,7 @@ public class Main {
                     bookClass();
                     return;
             }
-
+            
             String checkRoomAvailabilityQuery = "SELECT * FROM Classes WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
             PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
             checkRoomAvailabilityStatement.setInt(1, roomId);
