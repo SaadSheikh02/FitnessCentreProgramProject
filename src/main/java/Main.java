@@ -12,10 +12,10 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "5432";
-    private static String DB_NAME = "FitnessApplication";
+    private static String PORT = "1433";
+    private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
-    private static String PASSWORD = "DarkSniper22";
+    private static String PASSWORD = "50551591";
 
     private static String username = null;
 
@@ -1730,9 +1730,10 @@ public class Main {
     private static void roomBookingManagement() throws SQLException {
         System.out.println();
         System.out.println("Options: ");
-        System.out.println("1) Book room");
-        System.out.println("2) Cancel room booking");
-        System.out.println("3) Go Back");
+        System.out.println("1) View room bookings");
+        System.out.println("2) Book room");
+        System.out.println("3) Cancel room booking");
+        System.out.println("4) Go Back");
         System.out.println();
         System.out.println("Enter the number of your choice: ");
         int choice = input.nextInt();
@@ -1740,17 +1741,58 @@ public class Main {
 
         switch (choice) {
             case 1:
-                bookRoom();
+                viewRoomBookings();
                 break;
             case 2:
-                cancelRoomBooking();
+                bookRoom();
                 break;
             case 3:
-                trainerMenuChoices();
+                cancelRoomBooking();
                 break;
+            case 4:
+                adminMenuChoices();
             default:
                 System.out.println("Invalid choice. Try again");
-                trainerMenuChoices();
+                adminMenuChoices();
+        }
+    }
+
+    private static void viewRoomBookings(){
+        try {
+            String viewScheduleQuery = "SELECT * FROM Bookings";
+
+            PreparedStatement viewScheduleStatement = connection.prepareStatement(viewScheduleQuery);
+
+            ResultSet bookingResult = viewScheduleStatement.executeQuery();
+
+            if (!bookingResult.isBeforeFirst()) {
+                System.out.println("No room bookings found.");
+                roomBookingManagement();
+                return;
+            }
+
+            System.out.println("Room Bookings:");
+            System.out.println("----------------------------------------------------");
+            System.out.printf("| %-10s | %-15s | %-15s | %-15s | %-15s |\n", "Booking ID", "Room ID", "Class Date", "Time of Day", "Event Info");
+            System.out.println("----------------------------------------------------");
+            while (bookingResult.next()) {
+                int bookingId = bookingResult.getInt("booking_id");
+                int roomId = bookingResult.getInt("room_id");
+                String classDate = bookingResult.getString("class_date");
+                String timeOfDay = bookingResult.getString("time_of_day");
+                String eventInfo = bookingResult.getString("event_info");
+
+                System.out.printf("| %-10d | %-15s | %-15s | %-15s | %-15s |\n", bookingId, roomId, classDate, timeOfDay, eventInfo);
+            }
+            System.out.println("----------------------------------------------------");
+
+            bookingResult.close();
+            viewScheduleStatement.close();
+
+            roomBookingManagement();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1760,7 +1802,7 @@ public class Main {
             int roomId = input.nextInt();
             input.nextLine();
 
-            System.out.println("Enter the Class Description:");
+            System.out.println("Enter the Event Description:");
             String classDescription = input.nextLine();
 
             String date = getDate("class date", true);
