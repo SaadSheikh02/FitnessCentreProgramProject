@@ -15,12 +15,20 @@ Dates_Trainer_Available (trainer_id, start_trainer_date, start_time_of_day, end_
 VALUES ('sonic', '2024-05-01', 'MORNING', '2024-05-31', 'EVENING');
 
 INSERT INTO
-Classes (class_id, trainer_id, room_id, class_type, class_description, class_date, time_of_day)
-VALUES (1, 'sonic', 1, 'GROUP_TYPE', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
+Classes (trainer_id, room_id, class_type, class_description, class_date, time_of_day)
+VALUES ('sonic', 1, 'GROUP_TYPE', 'Kinesthetics', '2024-05-15', 'AFTERNOON');
 
 INSERT INTO
-Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day)
-VALUES ('sonic', '2024-05-15', 'AFTERNOON');
+Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES 
+('sonic', '2024-05-15', 'AFTERNOON');
+
+INSERT INTO Bookings (room_id, class_date, time_of_day, event_info) 
+VALUES (1, '2024-05-15', 'AFTERNOON', 'Kinesthetics');
+
+INSERT INTO Equipment (room_id, equipment_status) VALUES
+(1, 'GOOD'),
+(1, 'REQUIRES MAINTENANCE'),
+(1, 'BROKEN');
 
 INSERT INTO 
 Profiles (username, passwords, first_name, last_name, user_type) 

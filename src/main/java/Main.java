@@ -12,7 +12,7 @@ public class Main {
     static Scanner input;
 
     private static String HOST = "localhost";
-    private static String PORT = "1433";
+    private static String PORT = "5432";
     private static String DB_NAME = "comp3005_project_2";
     private static String USER = "postgres";
     private static String PASSWORD = "50551591";
@@ -159,7 +159,6 @@ public class Main {
                 trainerScheduleManagement();
                 break;
             case 2:
-                viewMemberProfile();
                 break;
             case 3:
                 userLogout();
@@ -185,7 +184,6 @@ public class Main {
 
         switch (choice) {
             case 1:
-                roomBookingManagement();
                 break;
             case 2:
                 break;
@@ -371,32 +369,6 @@ public class Main {
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()){
                 System.out.println();
-                /*
-                * while (resultSet.next()){
-                    System.out.print("\n" + resultSet.getString("username") + "\t");
-                    System.out.print(resultSet.getInt("credit_card") + "\t");
-                    System.out.print(resultSet.getDate("birthday") + "\t");
-                    System.out.print(resultSet.getInt("height") + "\t");
-                    System.out.print(resultSet.getInt("weight") + "\t");
-                    System.out.print(resultSet.getString("diet_plan") + "\t");
-                    System.out.print(resultSet.getInt("goal_weight") + "\t");
-                    System.out.print(resultSet.getInt("goal_speed") + "\t");
-                    System.out.print(resultSet.getInt("goal_lift") + "\t");
-                    System.out.print(resultSet.getDate("weight_deadline") + "\t");
-                    System.out.print(resultSet.getDate("speed_deadline") + "\t");
-                    System.out.print(resultSet.getDate("lift_deadline") + "\t");
-                    System.out.print(resultSet.getInt("weight_loss") + "\t");
-                    System.out.print(resultSet.getInt("max_speed") + "\t");
-                    System.out.print(resultSet.getInt("max_lift") + "\t");
-                    System.out.print(resultSet.getInt("bmi") + "\t");
-                    System.out.print(resultSet.getInt("systolic_bp") + "\t");
-                    System.out.print(resultSet.getInt("diastolic_bp") + "\t");
-                    System.out.print(resultSet.getInt("heart_rate") + "\t");
-                    System.out.print(resultSet.getInt("cholestrol_level") + "\t");
-                    System.out.print(resultSet.getInt("bloodsugar_level") + "\t");
-                }
-                * */
-
                 return true;
             }
         } catch (SQLException e) {
@@ -1129,17 +1101,17 @@ public class Main {
             String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
                     "FROM Dates_Trainer_Available d " +
                     "JOIN Profiles p ON d.trainer_id = p.username " +
-                    "WHERE CAST(? AS DATE) BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "WHERE ? BETWEEN d.start_trainer_date AND d.end_trainer_date " +
                     "AND NOT EXISTS (" +
                     "    SELECT 1 " +
                     "    FROM Dates_Trainer_Unavailable u " +
                     "    WHERE u.trainer_id = d.trainer_id " +
-                    "    AND u.trainer_date = CAST(? AS DATE)" +
+                    "    AND u.trainer_date = ?" +
                     "    AND u.time_of_day = ?" +
                     ")";
             PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
-            availableTrainersStatement.setString(1, date);
-            availableTrainersStatement.setString(2, date);
+            availableTrainersStatement.setDate(1, java.sql.Date.valueOf(date));
+            availableTrainersStatement.setDate(2, java.sql.Date.valueOf(date));
             availableTrainersStatement.setString(3, timeOfDay);
             ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
 
@@ -1174,7 +1146,16 @@ public class Main {
                 return;
             }
             String selectedTrainer = availableIDs.get(trainerChoice - 1);
-            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, CAST(? AS DATE), ?)";
+
+            String insertClassQuery = "INSERT INTO Classes (trainer_id, class_type, class_date, time_of_day) VALUES (?, ?, ?, ?)";
+            PreparedStatement insertClassStatement = connection.prepareStatement(insertClassQuery, Statement.RETURN_GENERATED_KEYS);
+            insertClassStatement.setString(1, selectedTrainer);
+            insertClassStatement.setString(2, "INDIVIDUAL_TYPE");
+            insertClassStatement.setDate(3, java.sql.Date.valueOf(date));
+            insertClassStatement.setString(4, timeOfDay);
+            insertClassStatement.executeUpdate();
+
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, ?, ?)";
             PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
             insertUnavailableStatement.setString(1, selectedTrainer);
             insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date)); // Convert string to java.sql.Date
@@ -1510,9 +1491,9 @@ public class Main {
                 changeEndDate(scheduleID);
                 break;
             case 3:
-                changeStartTime(scheduleID);
+//                changeStartTime();
             case 4:
-                changeEndTime(scheduleID);
+//                changeEndTime();
                 break;
             case 5:
                 menuDecider();
@@ -1950,4 +1931,431 @@ public class Main {
         System.out.println("Enter Room ID for the room you want to book: ");
         return input.nextInt();
     }
+
+    private static void manageEquipment() {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) View equipment");
+        System.out.println("2) Update equipment");
+        System.out.println("3) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                viewEquipments();
+                break;
+            case 2:
+                updateEquipmentStatus();
+                break;
+            case 3:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                manageEquipment();
+        }
+    }
+
+    private static void viewEquipments() {
+        try {
+            String viewEquipmentsQuery = "SELECT * FROM Equipment;";
+
+            PreparedStatement viewEquipmentsStatement = connection.prepareStatement(viewEquipmentsQuery);
+            ResultSet equipmentsResult = viewEquipmentsStatement.executeQuery();
+
+            if (!equipmentsResult.isBeforeFirst()) {
+                System.out.println("No equipments found.");
+                manageEquipment();
+                return;
+            }
+
+            System.out.println("Equipments:");
+            System.out.println("----------------------------------------");
+            System.out.printf("| %-12s | %-5s | %-20s |\n", "Equipment ID", "Room", "Status");
+            System.out.println("----------------------------------------");
+            while (equipmentsResult.next()) {
+                int equipmentID = equipmentsResult.getInt("equipment_id");
+                String roomID = equipmentsResult.getString("room_id");
+                String status = equipmentsResult.getString("equipment_status");
+
+                System.out.printf("| %-12d | %-5s | %-20s |\n", equipmentID, roomID, status);
+            }
+            System.out.println("----------------------------------------");
+
+            equipmentsResult.close();
+            viewEquipmentsStatement.close();
+
+            manageEquipment();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void updateEquipmentStatus() {
+        try {
+            System.out.println("Enter the Equipment ID of the equipment you want to update:");
+            int equipmentId = input.nextInt();
+            input.nextLine();
+
+            String checkEquipmentQuery = "SELECT * FROM Equipment WHERE equipment_id = ?";
+            PreparedStatement checkEquipmentStatement = connection.prepareStatement(checkEquipmentQuery);
+            checkEquipmentStatement.setInt(1, equipmentId);
+            ResultSet equipmentResult = checkEquipmentStatement.executeQuery();
+
+            if (!equipmentResult.isBeforeFirst()) {
+                System.out.println("Equipment not found.");
+                updateEquipmentStatus();
+            }
+
+            System.out.println();
+            System.out.println("Options: ");
+            System.out.println("1) Good");
+            System.out.println("2) Requires Maintenance");
+            System.out.println("3) Broken");
+            System.out.println("4) Removed");
+            System.out.println("5) Go Back");
+            System.out.println();
+            System.out.println("Enter new status: ");
+            String newStatus = "";
+            int choice = input.nextInt();
+            input.nextLine();
+
+            switch (choice) {
+                case 1:
+                    newStatus = "GOOD";
+                    break;
+                case 2:
+                    newStatus = "REQUIRES MAINTENANCE";
+                    break;
+                case 3:
+                    newStatus = "BROKEN";
+                    break;
+                case 4:
+                    newStatus = "REMOVED";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    updateEquipmentStatus();
+            }
+
+            if (newStatus == "REMOVED"){
+                String deleteEquipmentQuery = "DELETE FROM Equipment WHERE equipment_id = ?";
+                PreparedStatement deleteEquipmentStatement = connection.prepareStatement(deleteEquipmentQuery);
+                deleteEquipmentStatement.setInt(1, equipmentId);
+                deleteEquipmentStatement.executeUpdate();
+                deleteEquipmentStatement.close();
+            }
+            else {
+                String updateEquipmentQuery = "UPDATE Equipment SET equipment_status = ? WHERE equipment_id = ?";
+                PreparedStatement updateEquipmentStatement = connection.prepareStatement(updateEquipmentQuery);
+                updateEquipmentStatement.setString(1, newStatus);
+                updateEquipmentStatement.setInt(2, equipmentId);
+                int rowsAffected = updateEquipmentStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Equipment status updated successfully.");
+                } else {
+                    System.out.println("Failed to update equipment status.");
+                }
+
+                equipmentResult.close();
+                checkEquipmentStatement.close();
+                updateEquipmentStatement.close();
+            }
+
+            manageEquipment();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void manageClassSchedule(){
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) view class schedule");
+        System.out.println("2) book a new class");
+        System.out.println("3) cancel a class");
+        System.out.println("4) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                viewClassSchedule();
+                break;
+            case 2:
+                bookClass();
+                break;
+            case 3:
+                cancelClass();
+                break;
+            case 4:
+                menuDecider();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                manageClassSchedule();
+        }
+    }
+
+    private static void viewClassSchedule(){
+        try {
+            String viewClassScheduleQuery =
+                    "SELECT class_id, room_id, class_description, class_date, time_of_day " +
+                    "FROM Classes " +
+                    "WHERE class_type = 'GROUP_TYPE';";
+
+            PreparedStatement viewClassScheduleStatement = connection.prepareStatement(viewClassScheduleQuery);
+            ResultSet classScheduleResult = viewClassScheduleStatement.executeQuery();
+
+            System.out.println("Class Schedule:");
+            System.out.println("----------------------------------------------------------------------------");
+            System.out.printf("| %-10s | %-10s | %-20s | %-15s | %-10s |\n",
+                    "Class ID", "Room ID", "Class Description", "Date", "Time of Day");
+            System.out.println("----------------------------------------------------------------------------");
+
+            while (classScheduleResult.next()) {
+                int classId = classScheduleResult.getInt("class_id");
+                int roomId = classScheduleResult.getInt("room_id");
+                String classDescription = classScheduleResult.getString("class_description");
+                String classDate = classScheduleResult.getString("class_date");
+                String timeOfDay = classScheduleResult.getString("time_of_day");
+
+                System.out.printf("| %-10d | %-10d | %-20s | %-15s | %-10s |\n",
+                        classId, roomId, classDescription, classDate, timeOfDay);
+            }
+
+            System.out.println("----------------------------------------------------------------------------");
+
+            classScheduleResult.close();
+            viewClassScheduleStatement.close();
+
+            manageClassSchedule();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void bookClass() {
+        try {
+            System.out.println("Enter the Room ID:");
+            int roomId = input.nextInt();
+            input.nextLine();
+
+            System.out.println("Enter the Class Description:");
+            String classDescription = input.nextLine();
+
+            String date = getDate("class date", true);
+
+            System.out.println("What time of day?");
+            System.out.println("1. Morning");
+            System.out.println("2. Afternoon");
+            System.out.println("3. Evening");
+            System.out.println("Enter the number of your choice: ");
+            int timechoice = input.nextInt();
+            input.nextLine();
+
+            String timeOfDay = "";
+            switch (timechoice) {
+                case 1:
+                    timeOfDay = "MORNING";
+                    break;
+                case 2:
+                    timeOfDay = "AFTERNOON";
+                    break;
+                case 3:
+                    timeOfDay = "EVENING";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    bookClass();
+                    return;
+            }
+
+            String checkRoomAvailabilityQuery = "SELECT * FROM Classes WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+            PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
+            checkRoomAvailabilityStatement.setInt(1, roomId);
+            checkRoomAvailabilityStatement.setDate(2, java.sql.Date.valueOf(date));
+            checkRoomAvailabilityStatement.setString(3, timeOfDay);
+            ResultSet roomAvailabilityResult = checkRoomAvailabilityStatement.executeQuery();
+
+            if (roomAvailabilityResult.next()) {
+                System.out.println("Error: Room not available for that time of day on that date.");
+                bookClass();
+                return;
+            }
+
+            String availableTrainersQuery = "SELECT p.username, p.first_name, p.last_name, d.start_trainer_date, d.start_time_of_day, d.end_trainer_date, d.end_time_of_day " +
+                    "FROM Dates_Trainer_Available d " +
+                    "JOIN Profiles p ON d.trainer_id = p.username " +
+                    "WHERE ? BETWEEN d.start_trainer_date AND d.end_trainer_date " +
+                    "AND NOT EXISTS (" +
+                    "    SELECT 1 " +
+                    "    FROM Dates_Trainer_Unavailable u " +
+                    "    WHERE u.trainer_id = d.trainer_id " +
+                    "    AND u.trainer_date = ?" +
+                    "    AND u.time_of_day = ?" +
+                    ")";
+            PreparedStatement availableTrainersStatement = connection.prepareStatement(availableTrainersQuery);
+            availableTrainersStatement.setDate(1, java.sql.Date.valueOf(date));
+            availableTrainersStatement.setDate(2, java.sql.Date.valueOf(date));
+            availableTrainersStatement.setString(3, timeOfDay);
+            ResultSet availableTrainersResult = availableTrainersStatement.executeQuery();
+
+            List<String> availableTrainers = new ArrayList<>();
+            List<String> availableIDs = new ArrayList<>();
+            while (availableTrainersResult.next()) {
+                String firstName = availableTrainersResult.getString("first_name");
+                String lastName = availableTrainersResult.getString("last_name");
+                String ID = availableTrainersResult.getString("username");
+                availableTrainers.add(firstName + " " + lastName);
+                availableIDs.add(ID);
+            }
+
+            System.out.println("Available Trainers:");
+            for (int i = 0; i < availableTrainers.size(); i++) {
+                System.out.println((i + 1) + ". " + availableTrainers.get(i));
+            }
+
+            if (availableTrainers.isEmpty()){
+                System.out.println("There are no available trainers during that time.");
+                manageClassSchedule();
+                return;
+            }
+
+            System.out.println("Enter the number corresponding to the trainer you want to select:");
+            int trainerChoice = input.nextInt();
+            input.nextLine();
+
+            if (trainerChoice < 1 || trainerChoice > availableTrainers.size()) {
+                System.out.println("Invalid choice. Try again.");
+                bookClass();
+                return;
+            }
+
+            String selectedTrainer = availableIDs.get(trainerChoice - 1);
+
+            String insertClassQuery = "INSERT INTO Classes (trainer_id, room_id, class_type, class_description, class_date, time_of_day) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement insertClassStatement = connection.prepareStatement(insertClassQuery, Statement.RETURN_GENERATED_KEYS);
+            insertClassStatement.setString(1, selectedTrainer);
+            insertClassStatement.setInt(2, roomId);
+            insertClassStatement.setString(3, "GROUP_TYPE");
+            insertClassStatement.setString(4, classDescription);
+            insertClassStatement.setDate(5, java.sql.Date.valueOf(date));
+            insertClassStatement.setString(6, timeOfDay);
+            insertClassStatement.executeUpdate();
+
+            String insertUnavailableQuery = "INSERT INTO Dates_Trainer_Unavailable (trainer_id, trainer_date, time_of_day) VALUES (?, ?, ?)";
+            PreparedStatement insertUnavailableStatement = connection.prepareStatement(insertUnavailableQuery);
+            insertUnavailableStatement.setString(1, selectedTrainer);
+            insertUnavailableStatement.setDate(2, java.sql.Date.valueOf(date));
+            insertUnavailableStatement.setString(3, timeOfDay);
+            insertUnavailableStatement.executeUpdate();
+
+
+            System.out.println("Do you want to schedule another class? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+
+            if (choice == 'y' || choice == 'Y') {
+                bookClass();
+            } else {
+                manageClassSchedule();
+            }
+
+            roomAvailabilityResult.close();
+            checkRoomAvailabilityStatement.close();
+            availableTrainersResult.close();
+            availableTrainersStatement.close();
+            insertUnavailableStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void cancelClass(){
+        try {
+            System.out.println("Enter the class_id of the class you want to cancel:");
+            int classId = input.nextInt();
+            input.nextLine();
+
+            String checkClassQuery = "SELECT * FROM Classes WHERE class_id = ?";
+            PreparedStatement checkClassStatement = connection.prepareStatement(checkClassQuery);
+            checkClassStatement.setInt(1, classId);
+            ResultSet classResult = checkClassStatement.executeQuery();
+
+            if (!classResult.next()) {
+                System.out.println("Class with class_id " + classId + " not found.");
+                manageClassSchedule();
+            }
+
+            String deleteClassQuery = "DELETE FROM Classes WHERE class_id = ?";
+            PreparedStatement deleteClassStatement = connection.prepareStatement(deleteClassQuery);
+            deleteClassStatement.setInt(1, classId);
+            int rowsAffected = deleteClassStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Class with class_id " + classId + " has been canceled.");
+            } else {
+                System.out.println("Failed to cancel class with class_id " + classId);
+            }
+
+            System.out.println("Do you want to delete another class? (y/n)");
+            char choice = input.next().charAt(0);
+            input.nextLine();
+
+            if (choice == 'y' || choice == 'Y') {
+                cancelClass();
+            } else {
+                manageClassSchedule();
+            }
+
+            classResult.close();
+            checkClassStatement.close();
+            deleteClassStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void viewBills() {
+        try {
+            String viewBillsQuery = "SELECT * FROM Bills";
+            PreparedStatement viewBillsStatement = connection.prepareStatement(viewBillsQuery);
+            ResultSet billsResult = viewBillsStatement.executeQuery();
+
+            System.out.println("Bills:");
+            System.out.println("------------------------------------------------------");
+            System.out.printf("| %-8s | %-15s | %-6s | %-12s |\n",
+                    "Bill ID", "Username", "Price", "Date Issued");
+            System.out.println("------------------------------------------------------");
+
+            while (billsResult.next()) {
+                int billId = billsResult.getInt("bill_id");
+                String username = billsResult.getString("username");
+                int price = billsResult.getInt("price");
+                Date dateIssued = billsResult.getDate("date_issued");
+
+                System.out.printf("| %-8d | %-15s | $%-5d | %-12s |\n",
+                        billId, username, price, dateIssued);
+            }
+
+            System.out.println("------------------------------------------------------");
+
+            billsResult.close();
+            viewBillsStatement.close();
+
+            menuDecider();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
