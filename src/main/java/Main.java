@@ -117,6 +117,7 @@ public class Main {
     }
 
     private static void memberMenuChoices() throws SQLException {
+        Buffer();
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Profile Information");
@@ -1803,6 +1804,7 @@ public class Main {
             input.nextLine();
 
             System.out.println("Enter the Event Description:");
+            // POTENTIAL LOCATION OF BUFFER FAILURE
             String classDescription = input.nextLine();
 
             String date = getDate("class date", true);
@@ -1860,7 +1862,7 @@ public class Main {
             }
         } catch (SQLException e) {
             if (e.getErrorCode() == 23505) {
-                System.out.println("This room is already booked for the given time and date. Please choose another time or room.");
+                System.out.println("Error: Room not available for that time of day on that date.");
             } else {
                 System.out.println("SQL Error: " + e.getMessage());
                 throw new RuntimeException(e);
@@ -1870,62 +1872,32 @@ public class Main {
 
     private static void cancelRoomBooking(){
         try {
-            System.out.println("Enter the Room ID:");
-            int roomId = input.nextInt();
+            System.out.println("Enter the Booking ID of the booking you wish to cancel:");
+            int bookingId = input.nextInt();
             input.nextLine();
 
-            String date = getDate("class date", true);
-
-            System.out.println("What time of day?");
-            System.out.println("1. Morning");
-            System.out.println("2. Afternoon");
-            System.out.println("3. Evening");
-            System.out.println("Enter the number of your choice: ");
-            int timechoice = input.nextInt();
-            input.nextLine();
-
-            String timeOfDay = "";
-            switch (timechoice) {
-                case 1:
-                    timeOfDay = "MORNING";
-                    break;
-                case 2:
-                    timeOfDay = "AFTERNOON";
-                    break;
-                case 3:
-                    timeOfDay = "EVENING";
-                    break;
-                default:
-                    System.out.println("Invalid choice. Try again");
-                    bookRoom();
-                    return;
-            }
-
-            String checkRoomAvailabilityQuery = "SELECT * FROM Bookings WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+            String checkRoomAvailabilityQuery = "SELECT * FROM Bookings WHERE booking_id = ?";
             PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
-            checkRoomAvailabilityStatement.setInt(1, roomId);
-            checkRoomAvailabilityStatement.setDate(2, java.sql.Date.valueOf(date));
-            checkRoomAvailabilityStatement.setString(3, timeOfDay);
+            checkRoomAvailabilityStatement.setInt(1, bookingId);
             ResultSet roomAvailabilityResult = checkRoomAvailabilityStatement.executeQuery();
 
             if (!roomAvailabilityResult.next()) {
-                System.out.println("Error: Room not available for that time of day on that date.");
-                bookRoom();
+                System.out.println("Error: Booking with that booking id does not exist");
+                cancelRoomBooking();
             }
             else {
-                String cancelBookingQuery = "DELETE FROM Bookings WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+                String cancelBookingQuery = "DELETE FROM Bookings WHERE booking_id = ?";
                 PreparedStatement addBookingStatement = connection.prepareStatement(cancelBookingQuery);
-                addBookingStatement.setInt(1, roomId);
-                addBookingStatement.setDate(2, java.sql.Date.valueOf(date));
-                addBookingStatement.setString(3, timeOfDay);
+                addBookingStatement.setInt(1, bookingId);
                 addBookingStatement.executeUpdate();
 
-                System.out.println("Room " + roomId + " booking has been canceled for " + date + " " + timeOfDay);
+                System.out.println("Booking with id  " + bookingId + " has been canceled");
                 roomBookingManagement();
             }
         } catch (SQLException e) {
             if (e.getErrorCode() == 23505) {
-                System.out.println("Error: Room not available for that time of day on that date.");
+                System.out.println("Error: Booking with that booking id does not exist");
+                cancelRoomBooking();
             } else {
                 System.out.println("SQL Error: " + e.getMessage());
                 throw new RuntimeException(e);
@@ -2403,5 +2375,4 @@ public class Main {
             e.printStackTrace();
         }
     }
-
 }
