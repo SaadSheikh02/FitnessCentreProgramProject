@@ -95,6 +95,7 @@ ALTER TABLE Class_Members
 ADD CONSTRAINT unique_class_user_constraint UNIQUE (class_id, username);
 
 CREATE TABLE Bookings (
+	booking_id SERIAL PRIMARY KEY,
 	room_id INT,
 	class_date DATE,
 	time_of_day TEXT,
