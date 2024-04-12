@@ -63,6 +63,9 @@ CREATE TABLE Classes (
 	time_of_day TEXT
 );
 
+ALTER TABLE Classes
+ADD CONSTRAINT unique_time_slot UNIQUE (room_id, class_date, time_of_day);
+
 CREATE TABLE Dates_Trainer_Available (
 	schedule_id SERIAL PRIMARY KEY,
 	trainer_id TEXT,

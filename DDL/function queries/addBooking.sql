@@ -1,0 +1,1 @@
+INSERT INTO Bookings(room_id, class_date, time_of_day, event_info) VALUES ('1', '2024-04-11', 'AFTERNOON', 'funeral')

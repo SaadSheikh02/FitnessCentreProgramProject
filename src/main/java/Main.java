@@ -170,7 +170,7 @@ public class Main {
         }
     }
 
-    private static void adminMenuChoices() {
+    private static void adminMenuChoices() throws SQLException {
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Room Booking Management");
@@ -185,6 +185,7 @@ public class Main {
 
         switch (choice) {
             case 1:
+                roomBookingManagement();
                 break;
             case 2:
                 break;
@@ -1741,6 +1742,106 @@ public class Main {
         }
     }
 
+    private static void roomBookingManagement() throws SQLException {
+        System.out.println();
+        System.out.println("Options: ");
+        System.out.println("1) Book room");
+        System.out.println("2) Cancel room booking");
+        System.out.println("3) Go Back");
+        System.out.println();
+        System.out.println("Enter the number of your choice: ");
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1:
+                bookRoom();
+                break;
+            case 2:
+//                cancelRoomBooking();
+                break;
+            case 3:
+                trainerMenuChoices();
+                break;
+            default:
+                System.out.println("Invalid choice. Try again");
+                trainerMenuChoices();
+        }
+    }
+
+    private static void bookRoom(){
+        try {
+            System.out.println("Enter the Room ID:");
+            int roomId = input.nextInt();
+            input.nextLine();
+
+            System.out.println("Enter the Class Description:");
+            String classDescription = input.nextLine();
+
+            String date = getDate("class date", true);
+
+            System.out.println("What time of day?");
+            System.out.println("1. Morning");
+            System.out.println("2. Afternoon");
+            System.out.println("3. Evening");
+            System.out.println("Enter the number of your choice: ");
+            int timechoice = input.nextInt();
+            input.nextLine();
+
+            String timeOfDay = "";
+            switch (timechoice) {
+                case 1:
+                    timeOfDay = "MORNING";
+                    break;
+                case 2:
+                    timeOfDay = "AFTERNOON";
+                    break;
+                case 3:
+                    timeOfDay = "EVENING";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    bookRoom();
+                    return;
+            }
+
+            String checkRoomAvailabilityQuery = "SELECT * FROM Bookings WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+            PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
+            checkRoomAvailabilityStatement.setInt(1, roomId);
+            checkRoomAvailabilityStatement.setDate(2, java.sql.Date.valueOf(date));
+            checkRoomAvailabilityStatement.setString(3, timeOfDay);
+            ResultSet roomAvailabilityResult = checkRoomAvailabilityStatement.executeQuery();
+
+            if (roomAvailabilityResult.next()) {
+                System.out.println("Error: Room not available for that time of day on that date.");
+                bookRoom();
+            }
+            else {
+                String addBookingQuery = "INSERT INTO Bookings(room_id, class_date, time_of_day, event_info) VALUES (?, ?, ?, ?)";
+                PreparedStatement addBookingStatement = connection.prepareStatement(addBookingQuery);
+                System.out.println("Room ID: " + roomId);
+                System.out.println("Date: " + date);
+                System.out.println("Time of Day: " + timeOfDay);
+                addBookingStatement.setInt(1, roomId);
+                addBookingStatement.setDate(2, java.sql.Date.valueOf(date));
+                addBookingStatement.setString(3, timeOfDay);
+                addBookingStatement.setString(4, classDescription);
+                addBookingStatement.executeUpdate();
+
+                System.out.println("Room " + roomId + " has been booked for " + date + " " + timeOfDay);
+                roomBookingManagement();
+            }
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 23505) {
+                System.out.println("This room is already booked for the given time and date. Please choose another time or room.");
+            } else {
+                System.out.println("SQL Error: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
     private static int getHeight() {
         System.out.println("Enter height (in cm): ");
         return input.nextInt();
@@ -1778,6 +1879,11 @@ public class Main {
 
     private static int getScheduleID(){
         System.out.println("Enter Schedule ID for the schedule you'd like to change: ");
+        return input.nextInt();
+    }
+
+    private static int getRoomID(){
+        System.out.println("Enter Room ID for the room you want to book: ");
         return input.nextInt();
     }
 }
