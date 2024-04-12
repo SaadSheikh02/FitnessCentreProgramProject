@@ -1898,7 +1898,7 @@ public class Main {
             }
         } catch (SQLException e) {
             if (e.getErrorCode() == 23505) {
-                System.out.println("This room is already booked for the given time and date. Please choose another time or room.");
+                System.out.println("Error: Room not available for that time of day on that date.");
             } else {
                 System.out.println("SQL Error: " + e.getMessage());
                 throw new RuntimeException(e);
