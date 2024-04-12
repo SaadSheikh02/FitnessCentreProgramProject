@@ -1758,7 +1758,7 @@ public class Main {
                 bookRoom();
                 break;
             case 2:
-//                cancelRoomBooking();
+                cancelRoomBooking();
                 break;
             case 3:
                 trainerMenuChoices();
@@ -1839,7 +1839,71 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
+    }
 
+    private static void cancelRoomBooking(){
+        try {
+            System.out.println("Enter the Room ID:");
+            int roomId = input.nextInt();
+            input.nextLine();
+
+            String date = getDate("class date", true);
+
+            System.out.println("What time of day?");
+            System.out.println("1. Morning");
+            System.out.println("2. Afternoon");
+            System.out.println("3. Evening");
+            System.out.println("Enter the number of your choice: ");
+            int timechoice = input.nextInt();
+            input.nextLine();
+
+            String timeOfDay = "";
+            switch (timechoice) {
+                case 1:
+                    timeOfDay = "MORNING";
+                    break;
+                case 2:
+                    timeOfDay = "AFTERNOON";
+                    break;
+                case 3:
+                    timeOfDay = "EVENING";
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    bookRoom();
+                    return;
+            }
+
+            String checkRoomAvailabilityQuery = "SELECT * FROM Bookings WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+            PreparedStatement checkRoomAvailabilityStatement = connection.prepareStatement(checkRoomAvailabilityQuery);
+            checkRoomAvailabilityStatement.setInt(1, roomId);
+            checkRoomAvailabilityStatement.setDate(2, java.sql.Date.valueOf(date));
+            checkRoomAvailabilityStatement.setString(3, timeOfDay);
+            ResultSet roomAvailabilityResult = checkRoomAvailabilityStatement.executeQuery();
+
+            if (!roomAvailabilityResult.next()) {
+                System.out.println("Error: Room not available for that time of day on that date.");
+                bookRoom();
+            }
+            else {
+                String cancelBookingQuery = "DELETE FROM Bookings WHERE room_id = ? AND class_date = ? AND time_of_day = ?";
+                PreparedStatement addBookingStatement = connection.prepareStatement(cancelBookingQuery);
+                addBookingStatement.setInt(1, roomId);
+                addBookingStatement.setDate(2, java.sql.Date.valueOf(date));
+                addBookingStatement.setString(3, timeOfDay);
+                addBookingStatement.executeUpdate();
+
+                System.out.println("Room " + roomId + " booking has been canceled for " + date + " " + timeOfDay);
+                roomBookingManagement();
+            }
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 23505) {
+                System.out.println("This room is already booked for the given time and date. Please choose another time or room.");
+            } else {
+                System.out.println("SQL Error: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static int getHeight() {
