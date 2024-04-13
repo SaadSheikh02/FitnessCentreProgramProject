@@ -117,7 +117,6 @@ public class Main {
     }
 
     private static void memberMenuChoices() throws SQLException {
-        Buffer();
         System.out.println();
         System.out.println("Options: ");
         System.out.println("1) Profile Information");
