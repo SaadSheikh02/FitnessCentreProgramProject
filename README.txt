@@ -17,4 +17,4 @@ Documentation:
 - The implementation can be found in /src/main/java/Main.java
 - The DDL and DML files can be found in the DDL folder of the project directory along with any relevant queries used in the functions of the program
 - The ER Model, ER Mapping, Project Plan, and Conceptual Design can be found in the docs folder of the project directory
-- Youtube video link to the Project Demo can be found below
+- Youtube video link to the Project Demo can be found above
