@@ -505,7 +505,7 @@ public class Main {
             // adding base member info
             prepStatement_member.executeUpdate();
 
-            System.out.println("Profile Created");
+            System.out.println("Personal Information Updated");
             menuDecider();
         }
         catch (Exception e){
@@ -1495,9 +1495,9 @@ public class Main {
                 changeEndDate(scheduleID);
                 break;
             case 3:
-//                changeStartTime();
+                changeStartTime(scheduleID);
             case 4:
-//                changeEndTime();
+                changeEndTime(scheduleID);
                 break;
             case 5:
                 menuDecider();
