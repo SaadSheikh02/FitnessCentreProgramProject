@@ -1799,11 +1799,10 @@ public class Main {
     private static void bookRoom(){
         try {
             System.out.println("Enter the Room ID:");
-            int roomId = input.nextInt();
+            int roomId = getRoomID();
             input.nextLine();
 
             System.out.println("Enter the Event Description:");
-            // POTENTIAL LOCATION OF BUFFER FAILURE
             String classDescription = input.nextLine();
 
             String date = getDate("class date", true);
@@ -1847,9 +1846,6 @@ public class Main {
             else {
                 String addBookingQuery = "INSERT INTO Bookings(room_id, class_date, time_of_day, event_info) VALUES (?, ?, ?, ?)";
                 PreparedStatement addBookingStatement = connection.prepareStatement(addBookingQuery);
-                System.out.println("Room ID: " + roomId);
-                System.out.println("Date: " + date);
-                System.out.println("Time of Day: " + timeOfDay);
                 addBookingStatement.setInt(1, roomId);
                 addBookingStatement.setDate(2, java.sql.Date.valueOf(date));
                 addBookingStatement.setString(3, timeOfDay);
@@ -2162,7 +2158,7 @@ public class Main {
     private static void bookClass() {
         try {
             System.out.println("Enter the Room ID:");
-            int roomId = input.nextInt();
+            int roomId = getRoomID();
             input.nextLine();
 
             System.out.println("Enter the Class Description:");
