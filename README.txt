@@ -8,6 +8,7 @@ Database Setup Steps:
 Documentation:
 - The DDL files can be found in the DDL folder of the project directory along with Any relevant queries used in the functions of the program
 - The ER Model, ER Mapping, Project Plan, and Conceptual Design can be found in the docs folder of the project directory
+- Project demo video will be found in the Brightspace submission, YouTube video link to the video is also available below (if any issues occur)
 
 GitHubRepository Link: https://github.com/SaadSheikh02/FitnessCentreProgramProject
 
